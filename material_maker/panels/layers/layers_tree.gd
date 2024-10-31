@@ -19,11 +19,12 @@ func _ready():
 	set_column_custom_minimum_width(1, 30)
 
 func _make_custom_tooltip(for_text):
+	var project_panel = mm_globals.main_window.get_current_project()
 	if for_text == "":
 		return null
 	var panel = preload("res://material_maker/panels/layers/layer_tooltip.tscn").instantiate()
 	var item : TreeItem = instance_from_id(int(for_text)) as TreeItem
-	panel.set_layer(item.get_meta("layer"))
+	panel.set_layer(item.get_meta("layer"), project_panel.get_settings())
 	return panel
 
 func update_from_layers(layers_array : Array, selected_layer) -> void:

@@ -6,8 +6,10 @@
 
 [node name="PaintProjectSettings" type="Window"]
 title = "Paint project settings"
+size = Vector2i(300, 225)
+transient = true
 exclusive = true
-always_on_top = true
+popup_window = true
 extend_to_title = true
 script = ExtResource("3")
 
