@@ -3,6 +3,7 @@ class_name MMLayer
 var name : String
 var index : int
 var hidden : bool
+var locked : bool = false
 var layers : Array[MMLayer] = []
 
 const LAYER_NONE  : int = -1
@@ -19,6 +20,7 @@ func duplicate():
 	print(layer.get_script().resource_path)
 	layer.name = name+" (copy)"
 	layer.hidden = false
+	layer.locked = false
 	for c in get_channels():
 		var texture = ImageTexture.new()
 		texture.set_image(get(c).get_image())
@@ -42,6 +44,7 @@ func load_layer(data : Dictionary, first_index : int, path : String) -> void:
 	else:
 		index = first_index
 	hidden = data.hidden
+	locked = data.locked
 	for c in get_channels():
 		if data.has(c):
 			var texture = ImageTexture.create_from_image(Image.load_from_file(path+"/"+data[c]))
@@ -52,7 +55,7 @@ func _save_layer(_data : Dictionary):
 	pass
 
 func save_layer(path : String) -> Dictionary:
-	var layer_data = { name=name, type=get_layer_type(), index=index, hidden=hidden }
+	var layer_data = { name=name, type=get_layer_type(), index=index, hidden=hidden, locked=locked }
 	for c in get_channels():
 		if get(c) != null:
 			var file_name : String = "%s_%d.png" % [ c, index ]

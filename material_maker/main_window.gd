@@ -97,6 +97,7 @@ const MENU : Array[Dictionary] = [
 	{ menu="Tools/Add selected node to library", submenu="add_selection_to_library", mode="material" },
 	{ menu="Tools/Add current brush to library", submenu="add_brush_to_library", mode="paint", not_in_ports=["HTML5"] },
 	{ menu="Tools/Create a screenshot of the current graph", command="generate_graph_screenshot", mode="material" },
+	#{ menu="Tools/Import Material as Brush", command="import_material_as_brush", mode="paint", not_in_ports=["HTML5"] },
 	{ menu="Tools/Paint project settings", command="paint_project_settings", mode="paint", not_in_ports=["HTML5"] },
 	{ menu="Tools/Set painting environment", submenu="paint_environment", mode="paint", not_in_ports=["HTML5"] },
 	{ menu="Tools/-" },
@@ -919,6 +920,19 @@ func paint_project_settings():
 	var dialog = load("res://material_maker/panels/paint/paint_project_settings.tscn").instantiate()
 	add_child(dialog)
 	dialog.edit_settings(get_current_project())
+
+func import_material_as_brush():
+	var dialog = preload("res://material_maker/windows/file_dialog/file_dialog.tscn").instantiate()
+	dialog.min_size = Vector2(500, 500)
+	dialog.access = FileDialog.ACCESS_FILESYSTEM
+	dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	dialog.add_filter("*.ptex;Material file")
+	var files = await dialog.select_files()
+	if files.size() != 0:
+		var graph_edit : MMGraphEdit = get_current_graph_edit()
+		graph_edit.load_from_data(null, files[0])
+
+
 
 func create_menu_paint_environment(menu : MMMenuManager.MenuBase) -> void:
 	get_node("/root/MainWindow/EnvironmentManager").create_environment_menu(menu)

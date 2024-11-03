@@ -2,48 +2,44 @@
     "version": "2.0.0",
     "configurations": [
         {
-            "name": "Launch",
-            "type": "coreclr",
+            "name": "Godot Debug",
+            "type": "godot",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "D:/Tools/Godot/Godot_v4.3-stable_win64.exe/Godot_v4.3-stable_win64.exe",
-            "cwd": "${workspaceFolder}",
-            "console": "internalConsole",
-            "stopAtEntry": false,
-            "args": [
-                "--path",
-                "${workspaceRoot}"
-            ]
+            "project": "${workspaceFolder}",
+            "address": "127.0.0.1",
+            "port": 6007,
+            "debugServer": 6006,
+            // engine command line flags
+            "profiling": true,
+            "single_threaded_scene": false,
+            "debug_collisions": false,
+            "debug_paths": false,
+            "debug_navigation": false,
+            "debug_avoidance": false,
+            "debug_stringnames": false,
         },
         {
-            "name": "Launch (Select Scene)",
-            "type": "coreclr",
+            "name": "Launch-Godot",
+            "type": "godot",
             "request": "launch",
-            "preLaunchTask": "build",
-            "program": "D:/Tools/Godot/Godot_v4.3-stable_win64.exe",
-            "cwd": "${workspaceFolder}",
-            "console": "internalConsole",
-            "stopAtEntry": false,
-            "args": [
-                "--path",
-                "${workspaceRoot}",
-                "${command:godot.csharp.getLaunchScene}"
-            ]
-        },
-        {
-            "name": "Launch Editor",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "D:/Tools/Godot/Godot_v4.3-stable_win64.exe",
-            "cwd": "${workspaceFolder}",
-            "console": "internalConsole",
-            "stopAtEntry": false,
-            "args": [
-                "--path",
-                "${workspaceRoot}",
-                "--editor"
-            ]
+            "project": "${workspaceFolder}",
+            "address": "127.0.0.1",
+            "port": 6007,
+            // engine command line flags
+            "profiling": false,
+            "single_threaded_scene": false,
+            "debug_collisions": false,
+            "debug_paths": false,
+            "debug_navigation": false,
+            "debug_avoidance": false,
+            "debug_stringnames": false,
+            "frame_delay": 0,
+            "time_scale": 1.0,
+            "disable_vsync": false,
+            "fixed_fps": 60,
+            // anything else
+            "additional_options": ""
         },
         {
             "name": "Attach to Process",

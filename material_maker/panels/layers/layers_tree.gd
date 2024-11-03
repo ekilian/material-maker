@@ -11,20 +11,28 @@ const ICONS = [ ICON_LAYER_PAINT, ICON_LAYER_PROC, ICON_LAYER_MASK ]
 
 const BUTTON_SHOWN = preload("res://material_maker/panels/layers/icons/visible.tres")
 const BUTTON_HIDDEN = preload("res://material_maker/panels/layers/icons/not_visible.tres")
+const BUTTON_CONFIG = preload("res://material_maker/panels/layers/icons/config.tres")
+const BUTTON_CONFIG_RED = preload("res://material_maker/panels/layers/icons/config_red.tres")
+const BUTTON_MASK = preload("res://material_maker/panels/layers/icons/mask.tres")
+#const BUTTON_MASK_RED = preload("res://material_maker/panels/layers/icons/mask_red.tres")
+const BUTTON_LOCKED = preload("res://material_maker/panels/layers/icons/locked.tres")
+const BUTTON_UNLOCKED = preload("res://material_maker/panels/layers/icons/unlocked.tres")
 
 signal selection_changed(old_selected, new_selected)
 
 func _ready():
+	set_column_expand(0, true)
 	set_column_expand(1, false)
-	set_column_custom_minimum_width(1, 30)
+	set_column_custom_minimum_width(1, 60)
 
 func _make_custom_tooltip(for_text):
-	var project_panel = mm_globals.main_window.get_current_project()
-	if for_text == "":
+	if for_text == "" || !for_text.is_valid_int():
 		return null
+	var project_panel = mm_globals.main_window.get_current_project()
 	var panel = preload("res://material_maker/panels/layers/layer_tooltip.tscn").instantiate()
 	var item : TreeItem = instance_from_id(int(for_text)) as TreeItem
-	panel.set_layer(item.get_meta("layer"), project_panel.get_settings())
+	if item:
+		panel.set_layer(item.get_meta("layer"), project_panel.get_settings())
 	return panel
 
 func update_from_layers(layers_array : Array, selected_layer) -> void:
@@ -37,10 +45,13 @@ func do_update_from_layers(layers_array : Array, item : TreeItem, selected_layer
 		var new_item = create_item(item)
 		new_item.set_text(0, l.name)
 		new_item.set_icon(0, ICONS[l.get_layer_type()])
-		new_item.add_button(1, BUTTON_HIDDEN if l.hidden else BUTTON_SHOWN, 0)
+		if l.get_layer_type() != MMLayer.LAYER_MASK:
+			new_item.add_button(1, BUTTON_LOCKED if l.locked else BUTTON_UNLOCKED, 0)
+			new_item.add_button(1, BUTTON_CONFIG, 1)
+		new_item.add_button(1, BUTTON_HIDDEN if l.hidden else BUTTON_SHOWN, 2, false, str(new_item.get_instance_id()))
 		new_item.set_editable(0, false)
 		new_item.set_meta("layer", l)
-		new_item.set_tooltip_text(0, str(new_item.get_instance_id()))
+		new_item.set_tooltip_text(0, "")
 		if l == selected_layer:
 			new_item.select(0)
 			selected_item = new_item
@@ -92,11 +103,26 @@ func _drop_data(pos : Vector2, data):
 				else:
 					print("Cannot move item")
 		_on_layers_changed()
-
+		
 func _on_Tree_button_pressed(item : TreeItem, _column : int, _id : int, _button_index : int):
-	var layer = item.get_meta("layer")
-	layer.hidden = not layer.hidden
-	_on_layers_changed()
+	match _id:
+		0:
+			var layer = item.get_meta("layer")
+			layer.locked = not layer.locked
+			_on_layers_changed()
+		1: 
+			var current = get_selected()
+			if current != null:
+				var layer : MMLayer = current.get_meta("layer")
+				if layer.get_layer_type() == MMLayer.LAYER_MASK:
+					return
+				var popup = preload("res://material_maker/panels/layers/layer_config_popup.tscn").instantiate()
+				add_child(popup)
+				popup.configure_layer(layers, current.get_meta("layer"))
+		2:
+			var layer = item.get_meta("layer")
+			layer.hidden = not layer.hidden
+			_on_layers_changed()
 
 func _on_Tree_cell_selected():
 	just_selected = true
