@@ -22,10 +22,10 @@ func edit_settings(p):
 func apply_settings():
 	var settings : Dictionary = {}
 	settings.texture_size = $Margin/VBox/TextureSize/SizeOptionButton.size_value
-	settings.paint_emission = $Margin/VBox/PaintEmission.pressed
-	settings.paint_normal = $Margin/VBox/PaintNormal.pressed
-	settings.paint_depth = $Margin/VBox/PaintDepth.pressed
-	settings.paint_depth_as_bump = $Margin/VBox/Bump/PaintBump.pressed
+	settings.paint_emission = $Margin/VBox/PaintEmission.button_pressed
+	settings.paint_normal = $Margin/VBox/PaintNormal.button_pressed
+	settings.paint_depth = $Margin/VBox/PaintDepth.button_pressed
+	settings.paint_depth_as_bump = $Margin/VBox/Bump/PaintBump.button_pressed
 	settings.bump_strength = $Margin/VBox/Bump/BumpStrength.value
 	project.set_settings(settings)
 
