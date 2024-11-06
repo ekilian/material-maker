@@ -1,3 +1,4 @@
+class_name FloatEdit
 extends Container
 
 var float_value: float = 0.5
@@ -39,7 +40,7 @@ var actually_dragging: bool = false
 signal value_changed(value)
 signal value_changed_undo(value, merge_undo)
 
-enum Modes {IDLE, SLIDING, EDITING}
+enum Modes {IDLE, SLIDING, EDITING, INACTIVE}
 var mode := Modes.IDLE:
 	set(m):
 		mode = m
@@ -51,6 +52,8 @@ var mode := Modes.IDLE:
 			$Edit.caret_column = len($Edit.text)
 			$Edit.alignment = HORIZONTAL_ALIGNMENT_LEFT
 			$Slider.value = min_value
+		elif mode == Modes.INACTIVE:
+			$Edit.editable = false
 		else:
 			$Edit.editable = false
 			$Edit.alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -71,8 +74,11 @@ func set_value(v: Variant, notify := false, merge_undos := false) -> void:
 	if v is int or (v is String and v.is_valid_float()):
 		v = float(v)
 
-	if v is String and float_only:
-		v = min_value
+	if v is String:
+		if v.contains(","):
+			v.replace(",", ".")
+		elif float_only:
+			v = min_value
 
 	if v is float:
 		float_value = v
@@ -128,6 +134,8 @@ func _input(event:InputEvent) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	if mode == Modes.INACTIVE:
+		return
 	if mode == Modes.IDLE:
 
 		# Handle Drag-Start
@@ -299,14 +307,16 @@ func _ready() -> void:
 	min_value = min_value
 	max_value = max_value
 
-
+func set_inactive() -> void:
+	mode = Modes.INACTIVE
+	$Edit.editable = false
+	$Slider.visible = false
 
 func _on_mouse_entered() -> void:
 	update()
 
 func _on_mouse_exited() -> void:
 	update()
-
 
 func _on_edit_draw() -> void:
 	if get_viewport().gui_get_focus_owner() == self or get_viewport().gui_get_focus_owner() ==  $Edit:

@@ -1,0 +1,147 @@
+[gd_scene load_steps=15 format=3 uid="uid://33xdi5kwuqvx"]
+
+[ext_resource type="Script" path="res://material_maker/panels/color_mask/color_id_mask.gd" id="1_c01e5"]
+[ext_resource type="Shader" path="res://material_maker/panels/color_mask/shaders/color_id_mask.gdshader" id="2_xb0u4"]
+[ext_resource type="Texture2D" uid="uid://c0j4px4n72di5" path="res://material_maker/icons/icons.tres" id="3_fde5u"]
+[ext_resource type="Shader" path="res://material_maker/panels/paint/select_mask_dialog.gdshader" id="3_pwrxn"]
+[ext_resource type="Shader" path="res://material_maker/panels/color_mask/shaders/ssao.gdshader" id="3_v7wpp"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_chhoc"]
+shader = ExtResource("2_xb0u4")
+shader_parameter/color = null
+shader_parameter/mm_chunk_size = 1.0
+shader_parameter/mm_chunk_offset = Vector2(0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_iuike"]
+render_priority = 0
+shader = ExtResource("3_v7wpp")
+shader_parameter/samples = null
+shader_parameter/kernelSize = 64
+shader_parameter/radius = 0.5
+shader_parameter/bias = 0.025
+shader_parameter/num_noise = 4
+shader_parameter/noises = PackedVector3Array()
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nlxm4"]
+atlas = ExtResource("3_fde5u")
+region = Rect2(16, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t023p"]
+atlas = ExtResource("3_fde5u")
+region = Rect2(0, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5j7kl"]
+atlas = ExtResource("3_fde5u")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="World3D" id="World3D_ol3bs"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_ff15w"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6u5o3"]
+render_priority = 0
+shader = ExtResource("3_pwrxn")
+shader_parameter/mode = 0
+
+[sub_resource type="Environment" id="Environment_lgsld"]
+background_mode = 1
+background_color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[node name="ColorIdMask" type="PanelContainer"]
+offset_right = 300.0
+offset_bottom = 336.0
+theme_type_variation = &"MM_PanelBackground"
+script = ExtResource("1_c01e5")
+genmask_material = SubResource("ShaderMaterial_chhoc")
+ssao_material = SubResource("ShaderMaterial_iuike")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 2
+
+[node name="Load" type="TextureButton" parent="VBoxContainer/Buttons/HBoxContainer"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+tooltip_text = "Load new Color ID file"
+texture_normal = SubResource("AtlasTexture_nlxm4")
+
+[node name="Reset" type="TextureButton" parent="VBoxContainer/Buttons/HBoxContainer"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+tooltip_text = "Reset current selection"
+texture_normal = SubResource("AtlasTexture_t023p")
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="Clear" type="TextureButton" parent="VBoxContainer/Buttons/HBoxContainer2"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+tooltip_text = "Clear Color ID Mask"
+texture_normal = SubResource("AtlasTexture_5j7kl")
+
+[node name="ViewportContainer" type="SubViewportContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(250, 300)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="VBoxContainer/ViewportContainer"]
+own_world_3d = true
+world_3d = SubResource("World3D_ol3bs")
+handle_input_locally = false
+size = Vector2i(300, 308)
+render_target_update_mode = 4
+
+[node name="MeshPivot" type="Node3D" parent="VBoxContainer/ViewportContainer/SubViewport"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="VBoxContainer/ViewportContainer/SubViewport/MeshPivot"]
+mesh = SubResource("BoxMesh_ff15w")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_6u5o3")
+
+[node name="CameraPivot" type="Node3D" parent="VBoxContainer/ViewportContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="VBoxContainer/ViewportContainer/SubViewport/CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+environment = SubResource("Environment_lgsld")
+current = true
+far = 50.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="VBoxContainer/ViewportContainer/SubViewport"]
+light_color = Color(1, 1, 0.792157, 1)
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/ViewportContainer"]
+visible = false
+layout_mode = 2
+
+[node name="ContextMenu" type="PopupMenu" parent="."]
+size = Vector2i(125, 150)
+item_count = 7
+item_0/text = "Show  ID Map"
+item_1/text = "Show Mask"
+item_1/id = 1
+item_2/text = "Show Mix"
+item_2/id = 2
+item_3/id = 3
+item_3/separator = true
+item_4/text = "Load ID Map"
+item_4/id = 3
+item_5/text = "Reset Mask"
+item_5/id = 4
+item_6/text = "Bake SSAO"
+item_6/id = 5
+
+[connection signal="pressed" from="VBoxContainer/Buttons/HBoxContainer/Load" to="." method="_on_load_color_mask_pressed"]
+[connection signal="pressed" from="VBoxContainer/Buttons/HBoxContainer/Reset" to="." method="_on_reset_pressed"]
+[connection signal="gui_input" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_gui_input"]
+[connection signal="id_pressed" from="ContextMenu" to="." method="_on_context_menu_id_pressed"]

@@ -298,7 +298,7 @@ func update_view(p : Projection, t : Transform3D, s : Vector2i):
 	brush_params.view_back = Vector3(0.0, 0.0, 1.0) * transform.basis.orthonormalized()
 	brush_params.view_right = Vector3(1.0, 0.0, 0.0) * transform.basis.orthonormalized()
 	brush_params.view_up = Vector3(0.0, 1.0, 0.0) * transform.basis.orthonormalized()
-	print("back: "+str(brush_params.view_back))
+	#print("back: "+str(brush_params.view_back))
 	update_view_textures()
 	update_brush()
 

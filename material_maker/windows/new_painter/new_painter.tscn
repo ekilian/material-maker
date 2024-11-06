@@ -77,6 +77,8 @@ ambient_light_color = Color(1, 1, 1, 1)
 [node name="NewPainterWindow" type="Window"]
 title = "New Paint Project"
 size = Vector2i(500, 300)
+transient = true
+exclusive = true
 script = ExtResource("2")
 mesh_material = SubResource("ShaderMaterial_5x24r")
 

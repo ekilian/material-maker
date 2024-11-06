@@ -51,13 +51,3 @@ func _on_Down_pressed():
 	var current = tree.get_selected()
 	if current != null:
 		layers.move_layer_down(current.get_meta("layer"))
-
-func _on_Config_pressed():
-	var current = tree.get_selected()
-	if current != null:
-		var layer : MMLayer = current.get_meta("layer")
-		if layer.get_layer_type() == MMLayer.LAYER_MASK:
-			return
-		var popup = preload("res://material_maker/panels/layers/layer_config_popup.tscn").instantiate()
-		add_child(popup)
-		popup.configure_layer(layers, current.get_meta("layer"))

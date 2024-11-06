@@ -80,3 +80,6 @@ func set_state(s):
 			get(c).set_image(s[c])
 		else:
 			print("Useless channel %s in layer state" % c)
+			
+func has_custom_config() -> bool:
+	return false

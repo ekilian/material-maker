@@ -202,6 +202,7 @@ func init_project(mesh : Mesh, mesh_file_path : String, resolution : int, projec
 	set_object(mi, true)
 	set_project_path(project_file_path)
 	initialize_layers_history()
+	PainterEventBus.publish(DictionaryEvent.new("PAINT_PROJECT_LOADED", {"mesh" = mesh, "file_name" = model_path}))
 
 func set_object(o, init_material : bool = false):
 	object_name = o.name
@@ -1027,27 +1028,25 @@ func _on_h_split_container_dragged(offset):
 	var hsplit_offset : int = $VSplitContainer/HSplitContainer.size.x - offset
 	if last_hsplit_offset > hsplit_offset and hsplit_offset < 25:
 		$VSplitContainer/HSplitContainer/Painter2D.visible = false
-		$VSplitContainer/HSplitContainer/Painter/Show2DPaint.visible = true
 	last_hsplit_offset = hsplit_offset
 
 func _on_show_2d_paint_pressed():
-	$VSplitContainer/HSplitContainer/Painter2D.visible = true
-	$VSplitContainer/HSplitContainer/Painter/Show2DPaint.visible = false
-	$VSplitContainer/HSplitContainer.split_offset = $VSplitContainer/HSplitContainer.size.x - 100
+	$VSplitContainer/HSplitContainer/Painter2D.visible = !$VSplitContainer/HSplitContainer/Painter2D.visible
+	if $VSplitContainer/HSplitContainer/Painter2D.visible:
+		$VSplitContainer/HSplitContainer.split_offset = $VSplitContainer/HSplitContainer.size.x - (DisplayServer.screen_get_size().x * 0.15)
 
 var last_vsplit_offset : int = 0
 
 func _on_v_split_container_dragged(offset):
 	var vsplit_offset : int = $VSplitContainer.size.y - offset
 	if last_vsplit_offset > vsplit_offset and vsplit_offset < 25:
-		$VSplitContainer/GraphEdit.visible = false
-		$VSplitContainer/HSplitContainer/Painter/ShowBrushGraph.visible = true
+		$VSplitContainer/GraphEdit.visible = !$VSplitContainer/GraphEdit.visible
 	last_vsplit_offset = vsplit_offset
 
 func _on_show_brush_graph_pressed():
-	$VSplitContainer/GraphEdit.visible = true
-	$VSplitContainer/HSplitContainer/Painter/ShowBrushGraph.visible = false
-	$VSplitContainer.split_offset = $VSplitContainer.size.y - 100
+	$VSplitContainer/GraphEdit.visible = !$VSplitContainer/GraphEdit.visible
+	if $VSplitContainer/GraphEdit.visible:
+		$VSplitContainer.split_offset = $VSplitContainer.size.y - (DisplayServer.screen_get_size().y * 0.2)
 
 
 func _on_options_panel_minimum_size_changed():
@@ -1059,3 +1058,21 @@ func _on_mask_selector_gui_input(event):
 		if event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 			await load_id_map()
 			set_current_tool(MODE_MASK_SELECTOR)
+
+
+func _on_helper_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		$VSplitContainer/HSplitContainer/Painter/Helper.visible = true
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
+		_on_show_brush_graph_pressed()
+		_on_show_2d_paint_pressed()
+
+
+func _on_helper_mouse_exited() -> void:
+	$VSplitContainer/HSplitContainer/Painter/Helper.modulate = Color(1, 1, 1, 0)
+	print("Exit --------------------") # Replace with function body.
+
+
+func _on_helper_mouse_entered() -> void:
+	$VSplitContainer/HSplitContainer/Painter/Helper.modulate = Color(1, 1, 1, 1)
+	print("Enter --------------------") # Replace with function body.

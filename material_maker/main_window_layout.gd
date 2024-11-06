@@ -12,9 +12,10 @@ const PANELS = [
 	{ name="Brushes", scene=preload("res://material_maker/panels/brushes/brushes.tscn"), position="TopLeft" },
 	{ name="Layers", scene=preload("res://material_maker/panels/layers/layers.tscn"), position="BottomRight" },
 	{ name="Parameters", scene=preload("res://material_maker/panels/parameters/parameters.tscn"), position="TopRight" },
+	{ name="ColorMask", scene=preload("res://material_maker/panels/color_mask/color_id_mask.tscn"), position="TopRight" },
 ]
 const HIDE_PANELS = {
-	material=[ "Brushes", "Layers", "Parameters" ],
+	material=[ "Brushes", "Layers", "Parameters", "ColorMask" ],
 	paint=[ "Preview3D", "Histogram", "Hierarchy" ]
 }
 

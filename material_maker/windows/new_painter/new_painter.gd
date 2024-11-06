@@ -35,7 +35,7 @@ func _on_ModelFile_pressed():
 	if files.size() == 1:
 		set_mesh(files[0])
 	await get_tree().process_frame
-	move_to_foreground()
+	grab_focus()
 
 func set_mesh(file_name : String) -> void:
 	if file_name == mesh_filename:
@@ -79,6 +79,8 @@ func _on_ProjectFile_pressed():
 	var files = await dialog.select_files()
 	if files.size() == 1:
 		set_project(files[0])
+	await get_tree().process_frame
+	grab_focus()
 
 func set_project(file_name : String) -> void:
 	if file_name == project_filename:

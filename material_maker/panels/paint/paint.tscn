@@ -575,39 +575,37 @@ max_value = 250.0
 step = 1.0
 float_only = true
 
-[node name="Show2DPaint" type="TextureButton" parent="VSplitContainer/HSplitContainer/Painter"]
-visible = false
+[node name="Helper" type="VBoxContainer" parent="VSplitContainer/HSplitContainer/Painter"]
 layout_mode = 1
-anchors_preset = 3
+anchors_preset = -1
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -16.0
-offset_top = -50.0
-offset_bottom = -18.0
+offset_left = -52.0
+offset_top = -52.0
+offset_right = -2.0
+offset_bottom = -2.0
 grow_horizontal = 0
 grow_vertical = 0
-texture_normal = SubResource("AtlasTexture_knugp")
-ignore_texture_size = true
-stretch_mode = 4
+tooltip_text = "Double click to toggle 2D Painter and Graph"
 
-[node name="ShowBrushGraph" type="TextureButton" parent="VSplitContainer/HSplitContainer/Painter"]
-visible = false
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -50.0
-offset_top = -16.0
-offset_right = -18.0
-grow_horizontal = 0
-grow_vertical = 0
+[node name="Show2DPaint" type="TextureButton" parent="VSplitContainer/HSplitContainer/Painter/Helper"]
+layout_mode = 2
+size_flags_horizontal = 8
+mouse_filter = 1
+texture_normal = SubResource("AtlasTexture_knugp")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VSplitContainer/HSplitContainer/Painter/Helper"]
+layout_mode = 2
+alignment = 2
+
+[node name="ShowBrushGraph" type="TextureButton" parent="VSplitContainer/HSplitContainer/Painter/Helper/VBoxContainer"]
+custom_minimum_size = Vector2(32, 16)
+layout_mode = 2
+mouse_filter = 1
 texture_normal = SubResource("AtlasTexture_g8gfk")
 ignore_texture_size = true
-stretch_mode = 4
 
 [node name="Painter2D" type="Control" parent="VSplitContainer/HSplitContainer"]
 custom_minimum_size = Vector2(10, 10)
@@ -676,8 +674,11 @@ shader_context_defs = "uniform sampler2D mesh_normal_tex;
 [connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Jitter/JitterOpacity" to="." method="_on_Brush_value_changed" binds= ["jitter_opacity"]]
 [connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Jitter/JitterHardness" to="." method="_on_BrushHardness_value_changed"]
 [connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Jitter/JitterSpacing" to="." method="_on_BrushOpacity_value_changed"]
-[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/Show2DPaint" to="." method="_on_show_2d_paint_pressed"]
-[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/ShowBrushGraph" to="." method="_on_show_brush_graph_pressed"]
+[connection signal="gui_input" from="VSplitContainer/HSplitContainer/Painter/Helper" to="." method="_on_helper_gui_input"]
+[connection signal="mouse_entered" from="VSplitContainer/HSplitContainer/Painter/Helper" to="." method="_on_helper_mouse_entered"]
+[connection signal="mouse_exited" from="VSplitContainer/HSplitContainer/Painter/Helper" to="." method="_on_helper_mouse_exited"]
+[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/Helper/Show2DPaint" to="." method="_on_show_2d_paint_pressed"]
+[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/Helper/VBoxContainer/ShowBrushGraph" to="." method="_on_show_brush_graph_pressed"]
 [connection signal="item_selected" from="VSplitContainer/HSplitContainer/Painter2D/VBoxContainer/ChannelSelect" to="." method="_on_ChannelSelect_item_selected"]
 [connection signal="gui_input" from="VSplitContainer/HSplitContainer/Painter2D/VBoxContainer/Texture2D" to="." method="_on_Texture_gui_input"]
 [connection signal="resized" from="VSplitContainer/HSplitContainer/Painter2D/VBoxContainer/Texture2D" to="." method="_on_Texture_resized"]

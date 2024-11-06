@@ -1,7 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://djchjqk70hye1"]
 
 [ext_resource type="Script" path="res://material_maker/panels/layers/layer_tooltip_thumbnail.gd" id="1"]
-[ext_resource type="Shader" path="res://material_maker/panels/layers/layer_tooltip_thumbnail.gdshader" id="2"]
+[ext_resource type="Shader" path="res://material_maker/panels/layers/shaders/layer_tooltip_thumbnail.gdshader" id="2"]
+
 
 [sub_resource type="ShaderMaterial" id="1"]
 resource_local_to_scene = true

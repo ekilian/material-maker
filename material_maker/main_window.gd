@@ -33,7 +33,7 @@ var histogram
 var preview_3d
 var hierarchy
 var brushes
-
+var color_mask
 
 var current_mesh : Mesh = null
 
@@ -177,6 +177,7 @@ func _ready() -> void:
 	hierarchy = get_panel("Hierarchy")
 	hierarchy.connect("group_selected", self.on_group_selected)
 	brushes = get_panel("Brushes")
+	color_mask = get_panel("ColorMask")
 
 	# Load recent projects
 	load_recents()
@@ -532,7 +533,6 @@ func new_paint_project(obj_file_name = null) -> void:
 	# Prevent opening the New Paint Project dialog several times by pressing the keyboard shortcut.
 	if get_node_or_null("NewPainterWindow") != null:
 		return
-
 	var new_painter_dialog = preload("res://material_maker/windows/new_painter/new_painter.tscn").instantiate()
 	var result = await new_painter_dialog.ask(obj_file_name)
 	if ! result.has("mesh"):
@@ -919,6 +919,7 @@ func paint_project_settings():
 	var dialog = load("res://material_maker/panels/paint/paint_project_settings.tscn").instantiate()
 	add_child(dialog)
 	dialog.edit_settings(get_current_project())
+	#TODO: Update Layer values after applying
 
 func create_menu_paint_environment(menu : MMMenuManager.MenuBase) -> void:
 	get_node("/root/MainWindow/EnvironmentManager").create_environment_menu(menu)

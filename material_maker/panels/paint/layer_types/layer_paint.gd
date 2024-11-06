@@ -67,7 +67,6 @@ func _save_layer(data : Dictionary):
 	for c in get_expanded_channels():
 		data[c+"_alpha"] = get(c+"_alpha")
 
-
 func set_alpha(channel : String, value : float) -> void:
 	set(channel+"_alpha", value)
 
@@ -81,3 +80,9 @@ func update_color_rects(channel : String, parent_alpha : float = 1.0) -> void:
 	for l in layers:
 		if l.has_method("update_color_rects"):
 			l.update_color_rects(channel, alpha)
+
+func has_custom_config() -> bool:
+	for c in get_expanded_channels():
+		if get(c+"_alpha") != 1.0:
+			return true
+	return false

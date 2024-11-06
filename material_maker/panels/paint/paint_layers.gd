@@ -166,6 +166,17 @@ func add_layer(layer_type : int = 0) -> void:
 	layer.name = get_unused_layer_name(layers)
 	layer.index = get_unused_layer_index()
 	layer.hidden = false
+	
+	if mm_globals.main_window.get_current_project() is not MMGraphEdit:
+		var settings = mm_globals.main_window.get_current_project().get_settings()
+		if !settings.paint_emission:
+			layer.set_alpha("emission", 0)
+		if !settings.paint_normal:
+			layer.set_alpha("normal", 0)
+		if !settings.paint_depth:
+			layer.set_alpha("depth", 0)
+			layer.set_alpha("occlusion", 0)
+	
 	var image : Image = Image.create(texture_size, texture_size, false, Image.FORMAT_RGBAH)
 	image.fill(Color(0, 0, 0, 0))
 	for c in layer.get_channels():
