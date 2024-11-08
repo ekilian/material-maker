@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://qx02gvymgb5o"]
+[gd_scene load_steps=51 format=3 uid="uid://qx02gvymgb5o"]
 
 [ext_resource type="Script" path="res://material_maker/tools/undo_redo/undo_redo.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://ftx52hy53io2" path="res://material_maker/panels/paint/export.tscn" id="3"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://c0j4px4n72di5" path="res://material_maker/icons/icons.tres" id="5"]
 [ext_resource type="PackedScene" uid="uid://dot3yy7v6xa8g" path="res://material_maker/panels/paint/collapse_button.tscn" id="7_q2p7g"]
 [ext_resource type="Texture2D" uid="uid://cvorvnes6fiq7" path="res://material_maker/icons/icons.svg" id="7_xm5h4"]
+[ext_resource type="PackedScene" uid="uid://ubu15aub8rei" path="res://material_maker/panels/paint/scenes/new_project_panel.tscn" id="10_8np22"]
 [ext_resource type="PackedScene" uid="uid://d12t30rjvol15" path="res://material_maker/tools/painter/painter.tscn" id="12"]
 [ext_resource type="PackedScene" uid="uid://drudtoqh4ks4n" path="res://material_maker/panels/paint/paint_layers.tscn" id="13"]
 [ext_resource type="Script" path="res://material_maker/panels/paint/paint.gd" id="16"]
@@ -36,12 +37,44 @@ shader = SubResource("Shader_dye6v")
 shader_parameter/id = null
 shader_parameter/id_selected = null
 
+[sub_resource type="Sky" id="Sky_jk6yg"]
+
+[sub_resource type="Environment" id="Environment_torul"]
+background_mode = 2
+sky = SubResource("Sky_jk6yg")
+sky_custom_fov = 33.1
+
+[sub_resource type="World3D" id="World3D_2dac6"]
+environment = SubResource("Environment_torul")
+
 [sub_resource type="Sky" id="2"]
 radiance_size = 4
 
 [sub_resource type="Environment" id="3"]
 background_mode = 2
 sky = SubResource("2")
+
+[sub_resource type="Animation" id="Animation_lemou"]
+resource_name = "rotate"
+length = 10.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshPivot:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 10),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 360, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_f1y4a"]
+_data = {
+"rotate": SubResource("Animation_lemou")
+}
 
 [sub_resource type="Shader" id="4"]
 
@@ -204,12 +237,12 @@ script = ExtResource("1")
 [node name="VSplitContainer" type="VSplitContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
-split_offset = 480
+split_offset = 550
 
 [node name="HSplitContainer" type="HSplitContainer" parent="VSplitContainer"]
 clip_contents = true
 layout_mode = 2
-split_offset = 800
+split_offset = 900
 
 [node name="Painter" type="Control" parent="VSplitContainer/HSplitContainer"]
 clip_contents = true
@@ -227,9 +260,12 @@ stretch = true
 
 [node name="MainView" type="SubViewport" parent="VSplitContainer/HSplitContainer/Painter/View"]
 own_world_3d = true
+world_3d = SubResource("World3D_2dac6")
 handle_input_locally = false
-size = Vector2i(800, 480)
+size = Vector2i(900, 550)
 render_target_update_mode = 4
+
+[node name="Sun" type="DirectionalLight3D" parent="VSplitContainer/HSplitContainer/Painter/View/MainView"]
 
 [node name="CameraPosition" type="Node3D" parent="VSplitContainer/HSplitContainer/Painter/View/MainView"]
 
@@ -244,12 +280,20 @@ current = true
 near = 1.0
 far = 4.0
 
-[node name="PaintedMesh" type="MeshInstance3D" parent="VSplitContainer/HSplitContainer/Painter/View/MainView"]
+[node name="MeshPivot" type="Node3D" parent="VSplitContainer/HSplitContainer/Painter/View/MainView"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0)
 
-[node name="Sun" type="DirectionalLight3D" parent="VSplitContainer/HSplitContainer/Painter/View/MainView"]
+[node name="PaintedMesh" type="MeshInstance3D" parent="VSplitContainer/HSplitContainer/Painter/View/MainView/MeshPivot"]
+skeleton = NodePath("../..")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="VSplitContainer/HSplitContainer/Painter/View/MainView/MeshPivot"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_f1y4a")
+}
+autoplay = "rotate"
 
 [node name="BrushView" type="ColorRect" parent="VSplitContainer/HSplitContainer/Painter"]
-visible = false
 material = SubResource("5")
 layout_mode = 0
 anchor_right = 1.0
@@ -575,39 +619,49 @@ max_value = 250.0
 step = 1.0
 float_only = true
 
-[node name="Show2DPaint" type="TextureButton" parent="VSplitContainer/HSplitContainer/Painter"]
-visible = false
+[node name="TogglePanel" type="PanelContainer" parent="VSplitContainer/HSplitContainer/Painter"]
+modulate = Color(1, 1, 1, 0)
 layout_mode = 1
-anchors_preset = 3
+anchors_preset = -1
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -16.0
-offset_top = -50.0
-offset_bottom = -18.0
+offset_left = -40.0
+offset_top = -40.0
+offset_right = -3.0
+offset_bottom = -3.0
 grow_horizontal = 0
 grow_vertical = 0
+
+[node name="GridContainer" type="GridContainer" parent="VSplitContainer/HSplitContainer/Painter/TogglePanel"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+
+[node name="Show2DPaint" type="TextureButton" parent="VSplitContainer/HSplitContainer/Painter/TogglePanel/GridContainer"]
+custom_minimum_size = Vector2(16, 24)
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 3
+mouse_filter = 1
 texture_normal = SubResource("AtlasTexture_knugp")
 ignore_texture_size = true
 stretch_mode = 4
 
-[node name="ShowBrushGraph" type="TextureButton" parent="VSplitContainer/HSplitContainer/Painter"]
-visible = false
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -50.0
-offset_top = -16.0
-offset_right = -18.0
-grow_horizontal = 0
-grow_vertical = 0
+[node name="ShowBrushGraph" type="TextureButton" parent="VSplitContainer/HSplitContainer/Painter/TogglePanel/GridContainer"]
+custom_minimum_size = Vector2(24, 16)
+layout_mode = 2
+mouse_filter = 1
 texture_normal = SubResource("AtlasTexture_g8gfk")
 ignore_texture_size = true
 stretch_mode = 4
+
+[node name="NewProjectPanel" parent="VSplitContainer/HSplitContainer/Painter" instance=ExtResource("10_8np22")]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 10.0
+offset_top = -245.0
+offset_bottom = 245.0
 
 [node name="Painter2D" type="Control" parent="VSplitContainer/HSplitContainer"]
 custom_minimum_size = Vector2(10, 10)
@@ -643,7 +697,7 @@ mouse_filter = 2
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 1
-scroll_offset = Vector2(0, -308)
+scroll_offset = Vector2(-1, -238)
 shader_context_defs = "uniform sampler2D mesh_normal_tex;
 "
 
@@ -657,27 +711,17 @@ shader_context_defs = "uniform sampler2D mesh_normal_tex;
 [connection signal="mouse_exited" from="VSplitContainer/HSplitContainer/Painter/View" to="." method="_on_View_mouse_exited"]
 [connection signal="resized" from="VSplitContainer/HSplitContainer/Painter/View" to="." method="_on_resized"]
 [connection signal="toggled" from="VSplitContainer/HSplitContainer/Painter/Tools/Engine" to="." method="_on_Engine_toggled"]
-[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/Tools/FreeDots" to="." method="set_current_tool" binds= [0]]
-[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/Tools/FreeLine" to="." method="set_current_tool" binds= [1]]
-[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/Tools/Line" to="." method="set_current_tool" binds= [2]]
-[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/Tools/Stamp" to="." method="set_current_tool" binds= [3]]
-[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/Tools/ColorPicker" to="." method="set_current_tool" binds= [4]]
 [connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/Tools/Fill" to="." method="_on_Fill_pressed"]
 [connection signal="toggled" from="VSplitContainer/HSplitContainer/Painter/Tools/Eraser" to="." method="_on_Eraser_toggled"]
 [connection signal="gui_input" from="VSplitContainer/HSplitContainer/Painter/Tools/MaskSelector" to="." method="_on_mask_selector_gui_input"]
-[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/Tools/MaskSelector" to="." method="set_current_tool" binds= [5]]
 [connection signal="minimum_size_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel" to="." method="_on_options_panel_minimum_size_changed"]
-[connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Brush/BrushSize" to="." method="_on_Brush_value_changed" binds= ["brush_size"]]
-[connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Brush/BrushAngle" to="." method="_on_Brush_value_changed" binds= ["brush_size"]]
-[connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Brush/BrushHardness" to="." method="_on_Brush_value_changed" binds= ["brush_hardness"]]
-[connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Jitter/JitterPosition" to="." method="_on_Brush_value_changed" binds= ["jitter_position"]]
-[connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Jitter/JitterSize" to="." method="_on_Brush_value_changed" binds= ["jitter_size"]]
-[connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Jitter/JitterAngle" to="." method="_on_Brush_value_changed" binds= ["jitter_angle"]]
-[connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Jitter/JitterOpacity" to="." method="_on_Brush_value_changed" binds= ["jitter_opacity"]]
 [connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Jitter/JitterHardness" to="." method="_on_BrushHardness_value_changed"]
 [connection signal="value_changed" from="VSplitContainer/HSplitContainer/Painter/OptionsPanel/VBoxContainer/Jitter/JitterSpacing" to="." method="_on_BrushOpacity_value_changed"]
-[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/Show2DPaint" to="." method="_on_show_2d_paint_pressed"]
-[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/ShowBrushGraph" to="." method="_on_show_brush_graph_pressed"]
+[connection signal="gui_input" from="VSplitContainer/HSplitContainer/Painter/TogglePanel" to="." method="_on_helper_gui_input"]
+[connection signal="mouse_entered" from="VSplitContainer/HSplitContainer/Painter/TogglePanel" to="." method="_on_toggle_panel_mouse_entered"]
+[connection signal="mouse_exited" from="VSplitContainer/HSplitContainer/Painter/TogglePanel" to="." method="_on_toggle_panel_mouse_exited"]
+[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/TogglePanel/GridContainer/Show2DPaint" to="." method="_on_show_2d_paint_pressed"]
+[connection signal="pressed" from="VSplitContainer/HSplitContainer/Painter/TogglePanel/GridContainer/ShowBrushGraph" to="." method="_on_show_brush_graph_pressed"]
 [connection signal="item_selected" from="VSplitContainer/HSplitContainer/Painter2D/VBoxContainer/ChannelSelect" to="." method="_on_ChannelSelect_item_selected"]
 [connection signal="gui_input" from="VSplitContainer/HSplitContainer/Painter2D/VBoxContainer/Texture2D" to="." method="_on_Texture_gui_input"]
 [connection signal="resized" from="VSplitContainer/HSplitContainer/Painter2D/VBoxContainer/Texture2D" to="." method="_on_Texture_resized"]

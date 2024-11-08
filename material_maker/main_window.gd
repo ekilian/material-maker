@@ -197,7 +197,8 @@ func _ready() -> void:
 				push_error("Cannot load mesh from '%s'" % mesh_filename)
 				continue
 			var project_filename : String = mesh_filename.get_basename()+".mmpp"
-			create_paint_project(mesh, mesh_filename, 1024, project_filename)
+			create_paint_project(mesh, {
+				model=mesh_filename, project_filename=project_filename})
 
 	# Rescue unsaved projects
 	if true:
@@ -532,18 +533,17 @@ func new_paint_project(obj_file_name = null) -> void:
 	# Prevent opening the New Paint Project dialog several times by pressing the keyboard shortcut.
 	if get_node_or_null("NewPainterWindow") != null:
 		return
+	create_paint_project(null)
 
-	var new_painter_dialog = preload("res://material_maker/windows/new_painter/new_painter.tscn").instantiate()
-	var result = await new_painter_dialog.ask(obj_file_name)
-	if ! result.has("mesh"):
-		return
-	create_paint_project(result.mesh, result.mesh_filename, result.size, result.project_filename)
 
-func create_paint_project(mesh, mesh_filename, texture_size, project_filename):
+func create_paint_project(mesh = null, project : Dictionary = {}) -> void:
 	var paint_panel = load("res://material_maker/panels/paint/paint.tscn").instantiate()
 	projects_panel.get_projects().add_tab(paint_panel)
-	paint_panel.init_project(mesh, mesh_filename, texture_size, project_filename)
+	paint_panel.update_tab_title()
 	projects_panel.get_projects().current_tab = paint_panel.get_index()
+	if mesh and project:
+		#TODO: Open existing projects
+		paint_panel._init_project(mesh, project)
 
 func load_project() -> void:
 	if OS.get_name() == "HTML5":

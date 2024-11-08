@@ -3,14 +3,11 @@ extends VBoxContainer
 
 @export var mask_selection_material_template : ShaderMaterial
 
-var settings : Dictionary = {
-	texture_size=0,
-	paint_emission=true,
-	paint_normal=true,
-	paint_depth=true,
-	paint_depth_as_bump=true,
-	bump_strength=0.5
-}
+enum PaintStates {
+		INIT,
+		PAINTING
+	}
+var STATE : PaintStates = PaintStates.INIT
 
 const MODE_FREEHAND_DOTS  = 0
 const MODE_FREEHAND_LINE  = 1
@@ -41,6 +38,15 @@ var brush_graph = null
 var brush_node = null
 var remote_node = null
 
+var settings : Dictionary = {
+	texture_size=0,
+	paint_emission=true,
+	paint_normal=true,
+	paint_depth=true,
+	paint_depth_as_bump=true,
+	bump_strength=0.5
+}
+
 var brush_parameters : Dictionary = {
 	brush_size = 50.0,
 	brush_hardness = 0.5,
@@ -57,7 +63,8 @@ var mask : MMTexture = MMTexture.new()
 @onready var camera_position = $VSplitContainer/HSplitContainer/Painter/View/MainView/CameraPosition
 @onready var camera_rotation1 = $VSplitContainer/HSplitContainer/Painter/View/MainView/CameraPosition/CameraRotation1
 @onready var camera_rotation2 = $VSplitContainer/HSplitContainer/Painter/View/MainView/CameraPosition/CameraRotation1/CameraRotation2
-@onready var painted_mesh = $VSplitContainer/HSplitContainer/Painter/View/MainView/PaintedMesh
+@onready var mesh_pivot = $VSplitContainer/HSplitContainer/Painter/View/MainView/MeshPivot
+@onready var painted_mesh = $VSplitContainer/HSplitContainer/Painter/View/MainView/MeshPivot/PaintedMesh
 @onready var painter = $Painter
 @onready var tools = $VSplitContainer/HSplitContainer/Painter/Tools
 @onready var layers = $PaintLayers
@@ -89,18 +96,27 @@ signal update_material
 
 
 func _ready():
-	# Assign all textures to painted mesh
-	painted_mesh.set_surface_override_material(0, StandardMaterial3D.new())
-	# Updated Texture2View wrt current camera position
-	update_view()
 	# Disable physics process so we avoid useless updates of tex2view textures
 	set_physics_process(false)
-	set_current_tool(MODE_FREEHAND_DOTS)
-	initialize_2D_paint_select()
+	
+	brush_view_3d.visible = false
+	tools.visible = false
+	%OptionsPanel.visible = false
+	
+	get_node("VSplitContainer/HSplitContainer/Painter/NewProjectPanel").connect("model_selected", _load_mesh, 0)
+	get_node("VSplitContainer/HSplitContainer/Painter/NewProjectPanel").connect("project_created", _init_project, 0)
+	# Assign all textures to painted mesh
+	# painted_mesh.set_surface_override_material(0, StandardMaterial3D.new())
+	# Updated Texture2View wrt current camera position
+	#update_view()
+
+	#set_current_tool(MODE_FREEHAND_DOTS)
+	#initialize_2D_paint_select()
 	graph_edit.undoredo.disable()
 	graph_edit.node_factory = get_node("/root/MainWindow/NodeFactory")
 	graph_edit.new_material({nodes=[{name="Brush", type="brush"}], connections=[]})
 	update_brush_graph()
+	
 	call_deferred("update_brush")
 	set_environment(0)
 	# Create white mask
@@ -110,20 +126,42 @@ func _ready():
 	image.fill(Color(1, 1, 1))
 	mask_texture.set_image(image)
 	mask.set_texture(mask_texture)
-	_on_Brush_value_changed(%BrushSize.value, "brush_size")
-	_on_Brush_value_changed(%BrushHardness.value, "brush_hardness")
+	#_on_Brush_value_changed(%BrushSize.value, "brush_size")
+	#_on_Brush_value_changed(%BrushHardness.value, "brush_hardness")
+
+func _load_mesh(mesh_file_path : String) -> void:
+	var mesh : ArrayMesh = MMMeshLoader.load_mesh(mesh_file_path)
+	if mesh != null:
+		painted_mesh.mesh = mesh
+		# Apply the mesh material
+		if painted_mesh:
+			painted_mesh.set_surface_override_material(0, StandardMaterial3D.new())
+		# Center the mesh and move the camera to the whole object is visible
+		var aabb : AABB = painted_mesh.get_aabb()
+		painted_mesh.transform.origin = -aabb.position-0.5*aabb.size
+		var d : float = aabb.size.length()
+		#camera.transform.origin.z = 0.5*d+0.5
+		camera.near = 0.01
+		camera.far = d*4
+		# Show errors if any
+		var errors : PackedStringArray = PackedStringArray()
+		if mesh.get_surface_count() > 1:
+			errors.append("Mesh has several surfaces")
+		if mesh.surface_get_format(0) & ArrayMesh.ARRAY_FORMAT_TEX_UV == 0:
+			errors.append("Mesh does not have UVs")
+		print(errors)
 
 func update_tab_title() -> void:
 	if !get_parent().has_method("set_tab_title"):
 		#print("no set_tab_title method")
 		return
 	var title = "[unnamed]"
-	if save_path != null:
-		title = save_path.right(-(save_path.rfind("/")+1))
+	#if save_path != null:
+		#title = save_path.right(-(save_path.rfind("/")+1))
 	if need_save:
 		title += " *"
-	if get_parent().has_method("set_tab_title"):
-		get_parent().set_tab_title(get_index(), title)
+	#if get_parent().has_method("set_tab_title"):
+	get_parent().set_tab_title(get_index(), title)
 
 func set_project_path(p):
 	save_path = p
@@ -191,17 +229,26 @@ func get_brush_preview() -> Texture2D:
 
 func get_graph_edit():
 	return graph_edit
+	
+func init_new_project() -> void:
+	pass
 
-func init_project(mesh : Mesh, mesh_file_path : String, resolution : int, project_file_path : String):
-	settings.texture_size = int(round(log(resolution)/log(2)))
-	layers.set_texture_size(resolution)
-	var mi = MeshInstance3D.new()
-	mi.mesh = mesh
+func _init_project(project : Dictionary) -> void:
+	brush_view_3d.visible = true
+	tools.visible = true
+	%OptionsPanel.visible = true
+	$VSplitContainer/HSplitContainer/Painter/View/MainView/MeshPivot/AnimationPlayer.stop(false)
+	var tween = create_tween()
+	tween.tween_property(mesh_pivot, "position", Vector3(0, 0, 0), 0.1)
+	settings.texture_size = project.settings.texture_size #int(round(log(project.settings.texture_size)/log(2)))
+	layers.set_texture_size(settings.texture_size)
 	layers.add_layer()
-	model_path = mesh_file_path
-	set_object(mi, true)
-	set_project_path(project_file_path)
+	model_path = project.model
+	set_object(painted_mesh)
+	set_settings(project)
+	set_project_path(project.project_filename)
 	initialize_layers_history()
+	update_brush()
 
 func set_object(o, init_material : bool = false):
 	object_name = o.name
@@ -663,8 +710,9 @@ func show_brush(p, op = null):
 	update_brush_view_3d_visibility()
 
 func update_brush_view_3d_visibility():
-	if brush_view_3d_shown and view_3d.get_global_rect().has_point(get_global_mouse_position()):
-		brush_view_3d.show()
+	if STATE == PaintStates.PAINTING:
+		if brush_view_3d_shown and view_3d.get_global_rect().has_point(get_global_mouse_position()):
+			brush_view_3d.show()
 	else:
 		brush_view_3d.hide()
 
@@ -1027,27 +1075,25 @@ func _on_h_split_container_dragged(offset):
 	var hsplit_offset : int = $VSplitContainer/HSplitContainer.size.x - offset
 	if last_hsplit_offset > hsplit_offset and hsplit_offset < 25:
 		$VSplitContainer/HSplitContainer/Painter2D.visible = false
-		$VSplitContainer/HSplitContainer/Painter/Show2DPaint.visible = true
 	last_hsplit_offset = hsplit_offset
 
 func _on_show_2d_paint_pressed():
-	$VSplitContainer/HSplitContainer/Painter2D.visible = true
-	$VSplitContainer/HSplitContainer/Painter/Show2DPaint.visible = false
-	$VSplitContainer/HSplitContainer.split_offset = $VSplitContainer/HSplitContainer.size.x - 100
+	$VSplitContainer/HSplitContainer/Painter2D.visible = !$VSplitContainer/HSplitContainer/Painter2D.visible
+	if $VSplitContainer/HSplitContainer/Painter2D.visible:
+		$VSplitContainer/HSplitContainer.split_offset = $VSplitContainer/HSplitContainer.size.x - (DisplayServer.screen_get_size().x * 0.15)
 
 var last_vsplit_offset : int = 0
 
 func _on_v_split_container_dragged(offset):
 	var vsplit_offset : int = $VSplitContainer.size.y - offset
 	if last_vsplit_offset > vsplit_offset and vsplit_offset < 25:
-		$VSplitContainer/GraphEdit.visible = false
-		$VSplitContainer/HSplitContainer/Painter/ShowBrushGraph.visible = true
+		$VSplitContainer/GraphEdit.visible = !$VSplitContainer/GraphEdit.visible
 	last_vsplit_offset = vsplit_offset
 
 func _on_show_brush_graph_pressed():
-	$VSplitContainer/GraphEdit.visible = true
-	$VSplitContainer/HSplitContainer/Painter/ShowBrushGraph.visible = false
-	$VSplitContainer.split_offset = $VSplitContainer.size.y - 100
+	$VSplitContainer/GraphEdit.visible = !$VSplitContainer/GraphEdit.visible
+	if $VSplitContainer/GraphEdit.visible:
+		$VSplitContainer.split_offset = $VSplitContainer.size.y - (DisplayServer.screen_get_size().y * 0.2)
 
 
 func _on_options_panel_minimum_size_changed():
@@ -1059,3 +1105,17 @@ func _on_mask_selector_gui_input(event):
 		if event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 			await load_id_map()
 			set_current_tool(MODE_MASK_SELECTOR)
+
+
+func _on_helper_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
+		_on_show_brush_graph_pressed()
+		_on_show_2d_paint_pressed()
+
+
+func _on_toggle_panel_mouse_entered() -> void:
+	$VSplitContainer/HSplitContainer/Painter/TogglePanel.modulate = Color(1, 1, 1, 1)
+
+
+func _on_toggle_panel_mouse_exited() -> void:
+	$VSplitContainer/HSplitContainer/Painter/TogglePanel.modulate = Color(1, 1, 1, 0)
