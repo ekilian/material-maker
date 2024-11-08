@@ -7,7 +7,7 @@
 [node name="PaintProjectSettings" type="Window"]
 title = "Paint project settings"
 exclusive = true
-always_on_top = true
+popup_window = true
 extend_to_title = true
 script = ExtResource("3")
 
