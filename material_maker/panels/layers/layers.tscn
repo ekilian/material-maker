@@ -1,10 +1,13 @@
-[gd_scene load_steps=10 format=3 uid="uid://bavx4h3o65uam"]
+[gd_scene load_steps=13 format=3 uid="uid://cyqo3o1wu73gw"]
 
 [ext_resource type="Script" path="res://material_maker/panels/layers/layers_tree.gd" id="1"]
 [ext_resource type="Script" path="res://material_maker/panels/layers/layers.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://c0j4px4n72di5" path="res://material_maker/icons/icons.tres" id="3"]
+[ext_resource type="Texture2D" path="res://material_maker/panels/layers/icons/layer_paint.tres" id="3_sfh50"]
+[ext_resource type="Texture2D" path="res://material_maker/panels/layers/icons/layer_proc.tres" id="4_v74tb"]
+[ext_resource type="Texture2D" path="res://material_maker/panels/layers/icons/layer_mask.tres" id="5_necu2"]
 
-[sub_resource type="AtlasTexture" id="1"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_wup27"]
 atlas = ExtResource("3")
 region = Rect2(32, 160, 16, 16)
 
@@ -43,12 +46,20 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Add" type="TextureButton" parent="Layers/Buttons"]
+[node name="Add" type="MenuButton" parent="Layers/Buttons"]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3
-texture_normal = SubResource("1")
-stretch_mode = 3
+icon = SubResource("AtlasTexture_wup27")
+item_count = 3
+popup/item_0/text = "Paint Layer"
+popup/item_0/icon = ExtResource("3_sfh50")
+popup/item_1/text = "Procedural Layer"
+popup/item_1/icon = ExtResource("4_v74tb")
+popup/item_1/id = 1
+popup/item_2/text = "Mask Layer"
+popup/item_2/icon = ExtResource("5_necu2")
+popup/item_2/id = 2
 
 [node name="Duplicate" type="TextureButton" parent="Layers/Buttons"]
 custom_minimum_size = Vector2(0, 16)
