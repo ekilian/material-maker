@@ -1,16 +1,231 @@
-[gd_scene load_steps=2 format=3 uid="uid://vkh00fjvl0py"]
+[gd_scene load_steps=8 format=3 uid="uid://vkh00fjvl0py"]
 
 [ext_resource type="Script" path="res://material_maker/panels/parameters/parameters.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://dot3yy7v6xa8g" path="res://material_maker/panels/paint/collapse_button.tscn" id="3_21jka"]
+[ext_resource type="Script" path="res://material_maker/panels/parameters/project_params.gd" id="3_g2nk3"]
+[ext_resource type="Script" path="res://material_maker/widgets/size_option_button/size_option_button.gd" id="3_jd7hi"]
+[ext_resource type="PackedScene" uid="uid://rflulhsuy3ax" path="res://material_maker/widgets/float_edit/float_edit.tscn" id="3_vsso6"]
+[ext_resource type="Script" path="res://material_maker/panels/parameters/brush_params.gd" id="5_0ascy"]
+[ext_resource type="Script" path="res://material_maker/panels/parameters/layer_params.gd" id="6_fh6y0"]
 
+<<<<<<< Updated upstream
 [node name="BrushParams" type="ScrollContainer"]
+=======
+[node name="Parameters" type="ScrollContainer" groups=["layers"]]
+>>>>>>> Stashed changes
 custom_minimum_size = Vector2(200, 250)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+<<<<<<< Updated upstream
 size_flags_horizontal = 3
 script = ExtResource("1")
 
 [node name="Parameters" type="GridContainer" parent="."]
+=======
+offset_right = 199.0
+offset_bottom = 249.0
+size_flags_horizontal = 3
+theme_type_variation = &"MM_PanelBackground"
+script = ExtResource("1")
+
+[node name="CollapseContainer" type="VBoxContainer" parent="."]
+>>>>>>> Stashed changes
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="ProjectPanel" type="PanelContainer" parent="CollapseContainer"]
+layout_mode = 2
+theme_type_variation = &"MM_PanelBackground"
+
+[node name="Margin" type="PanelContainer" parent="CollapseContainer/ProjectPanel"]
+layout_mode = 2
+
+[node name="Container" type="VBoxContainer" parent="CollapseContainer/ProjectPanel/Margin"]
+layout_mode = 2
+
+[node name="ProjectButton" parent="CollapseContainer/ProjectPanel/Margin/Container" node_paths=PackedStringArray("node") instance=ExtResource("3_21jka")]
+layout_mode = 2
+text = "Project"
+node = NodePath("../Margin")
+
+[node name="Margin" type="MarginContainer" parent="CollapseContainer/ProjectPanel/Margin/Container"]
+layout_mode = 2
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 2
+theme_override_constants/margin_bottom = 2
+
+[node name="ProjectSettings" type="GridContainer" parent="CollapseContainer/ProjectPanel/Margin/Container/Margin"]
+layout_mode = 2
 columns = 2
+script = ExtResource("3_g2nk3")
+
+[node name="Label" type="Label" parent="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Texture2D size:"
+
+[node name="SizeOptionButton" type="OptionButton" parent="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings"]
+layout_mode = 2
+script = ExtResource("3_jd7hi")
+min_size = 8
+max_size = 12
+
+[node name="PaintEmission" type="CheckBox" parent="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings"]
+layout_mode = 2
+text = "Paint Emission"
+
+[node name="HSeparator2" type="HSeparator" parent="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings"]
+layout_mode = 2
+
+[node name="PaintNormal" type="CheckBox" parent="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings"]
+layout_mode = 2
+text = "Paint Normal"
+
+[node name="HSeparator" type="HSeparator" parent="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings"]
+layout_mode = 2
+
+[node name="PaintDepth" type="CheckBox" parent="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings"]
+layout_mode = 2
+text = "Paint Depth"
+
+[node name="HSeparator3" type="HSeparator" parent="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings"]
+layout_mode = 2
+
+[node name="PaintBump" type="CheckBox" parent="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Normals from depth"
+
+[node name="BumpStrength" parent="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings" instance=ExtResource("3_vsso6")]
+layout_mode = 2
+step = 0.01
+float_only = true
+
+[node name="LayerPanel" type="PanelContainer" parent="CollapseContainer"]
+layout_mode = 2
+theme_type_variation = &"MM_PanelBackground"
+
+[node name="Margin" type="PanelContainer" parent="CollapseContainer/LayerPanel"]
+layout_mode = 2
+
+[node name="Container" type="VBoxContainer" parent="CollapseContainer/LayerPanel/Margin"]
+layout_mode = 2
+
+[node name="LayerButton" parent="CollapseContainer/LayerPanel/Margin/Container" node_paths=PackedStringArray("node") instance=ExtResource("3_21jka")]
+layout_mode = 2
+text = "Layer"
+node = NodePath("../Margin")
+
+[node name="Margin" type="MarginContainer" parent="CollapseContainer/LayerPanel/Margin/Container"]
+layout_mode = 2
+
+[node name="LayerConfigs" type="GridContainer" parent="CollapseContainer/LayerPanel/Margin/Container/Margin"]
+layout_mode = 2
+columns = 2
+script = ExtResource("6_fh6y0")
+
+[node name="AlbedoLabel" type="Label" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Albedo alpha:"
+
+[node name="Albedo" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" instance=ExtResource("3_vsso6")]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 1.0
+step = 0.01
+
+[node name="MetallicLabel" type="Label" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Metallic alpha:"
+
+[node name="Metallic" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" instance=ExtResource("3_vsso6")]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 1.0
+step = 0.01
+
+[node name="RoughnessLabel" type="Label" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Roughness alpha:"
+
+[node name="Roughness" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" instance=ExtResource("3_vsso6")]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 1.0
+step = 0.01
+
+[node name="EmissionLabel" type="Label" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Emission alpha:"
+
+[node name="Emission" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" instance=ExtResource("3_vsso6")]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 1.0
+step = 0.01
+
+[node name="NormalLabel" type="Label" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Normal map alpha:"
+
+[node name="Normal" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" instance=ExtResource("3_vsso6")]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 1.0
+step = 0.01
+
+[node name="DepthLabel" type="Label" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Depth alpha:"
+
+[node name="Depth" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" instance=ExtResource("3_vsso6")]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 1.0
+step = 0.01
+
+[node name="OcclusionLabel" type="Label" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Occlusion alpha:"
+
+[node name="Occlusion" parent="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" instance=ExtResource("3_vsso6")]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 1.0
+step = 0.01
+
+[node name="BrushPanel" type="PanelContainer" parent="CollapseContainer"]
+layout_mode = 2
+theme_type_variation = &"MM_PanelBackground"
+
+[node name="PanelContainer" type="PanelContainer" parent="CollapseContainer/BrushPanel"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CollapseContainer/BrushPanel/PanelContainer"]
+layout_mode = 2
+
+[node name="BrushButton" parent="CollapseContainer/BrushPanel/PanelContainer/VBoxContainer" node_paths=PackedStringArray("node") instance=ExtResource("3_21jka")]
+layout_mode = 2
+node = NodePath("../Margin")
+
+[node name="Margin" type="MarginContainer" parent="CollapseContainer/BrushPanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
+
+[node name="BrushParameters" type="GridContainer" parent="CollapseContainer/BrushPanel/PanelContainer/VBoxContainer/Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+columns = 2
+script = ExtResource("5_0ascy")

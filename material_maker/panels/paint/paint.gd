@@ -161,7 +161,9 @@ func project_selected() -> void:
 	var main_window = mm_globals.main_window
 	main_window.get_panel("Layers").set_layers($PaintLayers)
 	remote_node = get_remote()
-	main_window.get_panel("Parameters").set_generator(remote_node)
+	var parameters_panel = main_window.get_panel("Parameters")
+	parameters_panel.set_generator(remote_node)
+	parameters_panel.set_project(get_settings())	#TODO: Check if needed
 
 func update_brush() -> void:
 	brush_node = graph_edit.generator.get_node("Brush")
@@ -173,6 +175,7 @@ func update_brush() -> void:
 func set_brush(data) -> void:
 	#print("Setting brush")
 	#print(data)
+	#TODO: Signal To Parameters
 	var parameters_panel = mm_globals.main_window.get_panel("Parameters")
 	parameters_panel.set_generator(null)
 	graph_edit.new_material(data)

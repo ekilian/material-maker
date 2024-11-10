@@ -23,13 +23,18 @@ func _make_custom_tooltip(for_text):
 		return null
 	var panel = preload("res://material_maker/panels/layers/layer_tooltip.tscn").instantiate()
 	var item : TreeItem = instance_from_id(int(for_text)) as TreeItem
-	panel.set_layer(item.get_meta("layer"))
+	if item:
+		panel.set_layer(item.get_meta("layer"))
 	return panel
 
 func update_from_layers(layers_array : Array, selected_layer) -> void:
 	selected_item = null
 	clear()
-	do_update_from_layers(layers_array, create_item(), selected_layer)
+	var root_item = create_item()
+	root_item.set_text(0, "Show Project Name")
+	root_item.set_tooltip_text(0, "")
+	root_item.set_editable(0, false)
+	do_update_from_layers(layers_array, root_item, selected_layer)
 
 func do_update_from_layers(layers_array : Array, item : TreeItem, selected_layer) -> void:
 	for l in layers_array:
@@ -44,6 +49,8 @@ func do_update_from_layers(layers_array : Array, item : TreeItem, selected_layer
 			new_item.select(0)
 			selected_item = new_item
 		do_update_from_layers(l.layers, new_item, selected_layer)
+
+# ----- Drag and Drop
 
 func _get_drag_data(_position : Vector2):
 	var layer = get_selected().get_meta("layer")
