@@ -8,29 +8,15 @@
 [ext_resource type="Script" path="res://material_maker/panels/parameters/brush_params.gd" id="5_0ascy"]
 [ext_resource type="Script" path="res://material_maker/panels/parameters/layer_params.gd" id="6_fh6y0"]
 
-<<<<<<< Updated upstream
-[node name="BrushParams" type="ScrollContainer"]
-=======
 [node name="Parameters" type="ScrollContainer" groups=["layers"]]
->>>>>>> Stashed changes
 custom_minimum_size = Vector2(200, 250)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-<<<<<<< Updated upstream
 size_flags_horizontal = 3
-script = ExtResource("1")
-
-[node name="Parameters" type="GridContainer" parent="."]
-=======
-offset_right = 199.0
-offset_bottom = 249.0
-size_flags_horizontal = 3
-theme_type_variation = &"MM_PanelBackground"
 script = ExtResource("1")
 
 [node name="CollapseContainer" type="VBoxContainer" parent="."]
->>>>>>> Stashed changes
 layout_mode = 2
 size_flags_horizontal = 3
 
