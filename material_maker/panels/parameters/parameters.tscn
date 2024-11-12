@@ -215,3 +215,17 @@ unique_name_in_owner = true
 layout_mode = 2
 columns = 2
 script = ExtResource("5_0ascy")
+
+[connection signal="size_value_changed" from="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings/SizeOptionButton" to="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings" method="_on_size_option_button_size_value_changed"]
+[connection signal="pressed" from="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings/PaintEmission" to="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings" method="_on_paint_emission_pressed"]
+[connection signal="pressed" from="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings/PaintNormal" to="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings" method="_on_paint_normal_pressed"]
+[connection signal="pressed" from="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings/PaintDepth" to="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings" method="_on_paint_depth_pressed"]
+[connection signal="pressed" from="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings/PaintBump" to="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings" method="_on_paint_bump_pressed"]
+[connection signal="value_changed" from="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings/BumpStrength" to="CollapseContainer/ProjectPanel/Margin/Container/Margin/ProjectSettings" method="_on_bump_strength_value_changed"]
+[connection signal="value_changed" from="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs/Albedo" to="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" method="_on_value_changed" binds= ["albedo"]]
+[connection signal="value_changed" from="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs/Metallic" to="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" method="_on_value_changed" binds= ["metallic"]]
+[connection signal="value_changed" from="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs/Roughness" to="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" method="_on_value_changed" binds= ["roughness"]]
+[connection signal="value_changed" from="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs/Emission" to="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" method="_on_value_changed" binds= ["emission"]]
+[connection signal="value_changed" from="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs/Normal" to="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" method="_on_value_changed" binds= ["normal"]]
+[connection signal="value_changed" from="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs/Depth" to="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" method="_on_value_changed" binds= ["depth"]]
+[connection signal="value_changed" from="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs/Occlusion" to="CollapseContainer/LayerPanel/Margin/Container/Margin/LayerConfigs" method="_on_value_changed" binds= ["occlusion"]]

@@ -34,7 +34,9 @@ func update_from_layers(layers_array : Array, selected_layer) -> void:
 	root_item.set_text(0, "Show Project Name")
 	root_item.set_tooltip_text(0, "")
 	root_item.set_editable(0, false)
+	root_item.set_meta("layer", MMLayer.new())	#Pseudo-Layer for the root
 	do_update_from_layers(layers_array, root_item, selected_layer)
+	
 
 func do_update_from_layers(layers_array : Array, item : TreeItem, selected_layer) -> void:
 	for l in layers_array:
@@ -69,7 +71,8 @@ func item_is_child(i1 : TreeItem, i2 : TreeItem):
 func _can_drop_data(pos : Vector2, data):
 	drop_mode_flags = DROP_MODE_ON_ITEM | DROP_MODE_INBETWEEN
 	var target_item = get_item_at_position(pos)
-	if target_item != null and !item_is_child(target_item, data):
+	print(str(target_item) + " - " + str(data))
+	if target_item != null and !data.is_queued_for_deletion() and !item_is_child(target_item, data):
 		return true
 	return false
 

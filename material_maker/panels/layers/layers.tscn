@@ -11,23 +11,23 @@
 atlas = ExtResource("3")
 region = Rect2(160, 128, 16, 16)
 
-[sub_resource type="AtlasTexture" id="2"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_2qprl"]
 atlas = ExtResource("3")
 region = Rect2(48, 160, 16, 16)
 
-[sub_resource type="AtlasTexture" id="3"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_o26h6"]
 atlas = ExtResource("3")
-region = Rect2(64, 160, 16, 16)
+region = Rect2(112, 160, 16, 16)
 
-[sub_resource type="AtlasTexture" id="5"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_pipkg"]
 atlas = ExtResource("3")
 region = Rect2(96, 160, 16, 16)
 
-[sub_resource type="AtlasTexture" id="4"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_76tq8"]
 atlas = ExtResource("3")
 region = Rect2(80, 160, 16, 16)
 
-[node name="Layers" type="PanelContainer"]
+[node name="Layers" type="PanelContainer" groups=["layers"]]
 offset_top = 224.0
 offset_right = 150.0
 offset_bottom = 224.0
@@ -44,17 +44,14 @@ theme_type_variation = &"MM_PanelBackground"
 [node name="Buttons" type="HBoxContainer" parent="Layers/PanelContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 0
 
-[node name="AddPanel" type="PanelContainer" parent="Layers/PanelContainer/Buttons"]
+[node name="Add" type="MenuButton" parent="Layers/PanelContainer/Buttons"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-
-[node name="Add" type="MenuButton" parent="Layers/PanelContainer/Buttons/AddPanel"]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
-size_flags_horizontal = 4
 icon = SubResource("AtlasTexture_wup27")
+flat = false
+icon_alignment = 1
 item_count = 3
 popup/item_0/text = "Paint Layer"
 popup/item_0/icon = ExtResource("3_sfh50")
@@ -65,50 +62,34 @@ popup/item_2/text = "Mask Layer"
 popup/item_2/icon = ExtResource("5_necu2")
 popup/item_2/id = 2
 
-[node name="DuplicatePanel" type="PanelContainer" parent="Layers/PanelContainer/Buttons"]
+[node name="Duplicate" type="Button" parent="Layers/PanelContainer/Buttons"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-
-[node name="Duplicate" type="TextureButton" parent="Layers/PanelContainer/Buttons/DuplicatePanel"]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
 size_flags_horizontal = 3
-texture_normal = SubResource("2")
-stretch_mode = 3
+theme_type_variation = &"MM_Button"
+icon = SubResource("AtlasTexture_2qprl")
+icon_alignment = 1
 
-[node name="RemovePanel" type="PanelContainer" parent="Layers/PanelContainer/Buttons"]
+[node name="Remove" type="Button" parent="Layers/PanelContainer/Buttons"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-
-[node name="Remove" type="TextureButton" parent="Layers/PanelContainer/Buttons/RemovePanel"]
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
 size_flags_horizontal = 3
-texture_normal = SubResource("3")
-stretch_mode = 3
+icon = SubResource("AtlasTexture_o26h6")
+icon_alignment = 1
 
-[node name="DownPanel" type="PanelContainer" parent="Layers/PanelContainer/Buttons"]
+[node name="Down" type="Button" parent="Layers/PanelContainer/Buttons"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-
-[node name="Down" type="TextureButton" parent="Layers/PanelContainer/Buttons/DownPanel"]
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
 size_flags_horizontal = 3
-texture_normal = SubResource("5")
-stretch_mode = 3
+icon = SubResource("AtlasTexture_pipkg")
+icon_alignment = 1
 
-[node name="UpPanel" type="PanelContainer" parent="Layers/PanelContainer/Buttons"]
+[node name="Up" type="Button" parent="Layers/PanelContainer/Buttons"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-size_flags_horizontal = 0
-
-[node name="Up" type="TextureButton" parent="Layers/PanelContainer/Buttons/UpPanel"]
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
 size_flags_horizontal = 3
-texture_normal = SubResource("4")
-stretch_mode = 3
+icon = SubResource("AtlasTexture_76tq8")
+icon_alignment = 1
 
 [node name="Tree" type="Tree" parent="Layers" groups=["layers"]]
 unique_name_in_owner = true
@@ -121,11 +102,11 @@ columns = 2
 select_mode = 1
 script = ExtResource("1")
 
-[connection signal="pressed" from="Layers/PanelContainer/Buttons/AddPanel/Add" to="." method="_on_Add_pressed"]
-[connection signal="pressed" from="Layers/PanelContainer/Buttons/DuplicatePanel/Duplicate" to="." method="_on_Duplicate_pressed"]
-[connection signal="pressed" from="Layers/PanelContainer/Buttons/RemovePanel/Remove" to="." method="_on_Remove_pressed"]
-[connection signal="pressed" from="Layers/PanelContainer/Buttons/DownPanel/Down" to="." method="_on_Down_pressed"]
-[connection signal="pressed" from="Layers/PanelContainer/Buttons/UpPanel/Up" to="." method="_on_Up_pressed"]
+[connection signal="pressed" from="Layers/PanelContainer/Buttons/Add" to="." method="_on_Add_pressed"]
+[connection signal="pressed" from="Layers/PanelContainer/Buttons/Duplicate" to="." method="_on_Duplicate_pressed"]
+[connection signal="pressed" from="Layers/PanelContainer/Buttons/Remove" to="." method="_on_Remove_pressed"]
+[connection signal="pressed" from="Layers/PanelContainer/Buttons/Down" to="." method="_on_Down_pressed"]
+[connection signal="pressed" from="Layers/PanelContainer/Buttons/Up" to="." method="_on_Up_pressed"]
 [connection signal="button_clicked" from="Layers/Tree" to="Layers/Tree" method="_on_Tree_button_pressed"]
 [connection signal="cell_selected" from="Layers/Tree" to="Layers/Tree" method="_on_Tree_cell_selected"]
 [connection signal="gui_input" from="Layers/Tree" to="Layers/Tree" method="_on_Tree_gui_input"]
