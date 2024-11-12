@@ -11,20 +11,20 @@ var texture_size = 0
 var layers : Array[MMLayer] = []
 var selected_layer : MMLayer
 
-@onready var albedo = $Albedo
-@onready var metallic = $Metallic
-@onready var roughness = $Roughness
-@onready var emission = $Emission
-@onready var normal = $Normal
-@onready var normal_map = $NormalMap
-@onready var depth = $Depth
-@onready var occlusion = $Occlusion
+@onready var albedo: SubViewport = $Albedo
+@onready var metallic: SubViewport = $Metallic
+@onready var roughness: SubViewport = $Roughness
+@onready var emission: SubViewport = $Emission
+@onready var normal: SubViewport = $Normal
+@onready var depth: SubViewport = $Depth
+@onready var occlusion: SubViewport = $Occlusion
+
+@onready var normal_map: SubViewport = $NormalMap
+
 @onready var painter_node = get_node(painter) if painter != NodePath("") else null
 
 @onready var nm_material : ShaderMaterial = $NormalMap/Rect.get_material()
 var generate_nm : bool = true
-
-@onready var layers_pane = mm_globals.main_window.layout.get_panel("Layers")
 
 const LayerPaint = preload("res://material_maker/panels/paint/layer_types/layer_paint.gd")
 const LayerProcedural = preload("res://material_maker/panels/paint/layer_types/layer_procedural.gd")
@@ -33,7 +33,7 @@ const LAYER_TYPES : Array = [ LayerPaint, LayerProcedural, LayerMask ]
 
 const CHANNELS : Array = [ "albedo", "metallic", "roughness", "emission", "normal", "depth", "occlusion" ]
 
-
+#Check if needed
 signal layer_selected(l)
 
 
@@ -162,13 +162,16 @@ func add_layer(layer_type : int = 0) -> void:
 			layers_array = find_parent_array(selected_layer)
 		else:
 			layers_array = selected_layer.layers
+			
 	var layer_class = LAYER_TYPES[layer_type]
 	var layer = layer_class.new()
 	layer.name = get_unused_layer_name(layers)
 	layer.index = get_unused_layer_index()
 	layer.hidden = false
 	var image : Image = Image.create(texture_size, texture_size, false, Image.FORMAT_RGBAH)
-	image.fill(Color(0, 0, 0, 0))
+	if layer.get_layer_type() != MMLayer.LAYER_MASK:
+		image.fill(Color(0, 0, 0, 0))
+		
 	for c in layer.get_channels():
 		var texture = ImageTexture.create_from_image(image)
 		layer.set(c, texture)
@@ -229,14 +232,15 @@ func update_alpha(channel : String) -> void:
 			l.update_color_rects(channel)
 
 func _on_layers_changed() -> void:
-	var list = []
+	var list: Array[Dictionary] = []
 	get_visible_layers(list)
 	update_layers_renderer(list)
 	for c in CHANNELS:
 		update_alpha(c)
-	layers_pane.call_deferred("set_layers", self)
+	get_tree().call_group_flags(SceneTree.GROUP_CALL_DEFERRED, "layers", "set_layers", self)
 
-func get_visible_layers(list : Array, layers_array : Array[MMLayer] = layers, mask_array : Array = []) -> void:
+
+func get_visible_layers(list : Array[Dictionary], layers_array : Array[MMLayer] = layers, mask_array : Array = []) -> void:
 	for i in range(layers_array.size()-1, -1, -1):
 		var l = layers_array[i]
 		if l.hidden or l.get_layer_type() == MMLayer.LAYER_MASK:
@@ -273,103 +277,100 @@ func apply_masks(material : ShaderMaterial, masks : Array) -> void:
 		material.set_shader_parameter("mask%d_tex" % i, masks[i])
 
 func update_layers_renderer(visible_layers : Array) -> void:
-	for viewport in [ albedo, metallic, roughness, emission, normal, depth, occlusion ]:
+	var viewports : Array[Viewport] = [ albedo, metallic, roughness, emission, normal, depth, occlusion ]
+	for viewport in viewports:
 		while viewport.get_child_count() > 0:
 			var child = viewport.get_child(0)
 			viewport.remove_child(child)
-	var color_rect : ColorRect
-	color_rect = ColorRect.new()
-	color_rect.size = normal.size
-	color_rect.color = Color(0.5, 0.5, 0)
-	normal.add_child(color_rect)
-	color_rect = ColorRect.new()
-	color_rect.size = normal.size
-	color_rect.color = Color(1.0, 1.0, 1.0)
-	occlusion.add_child(color_rect)
+			
+	normal.add_child(MPColorRect.Create(normal.size, Color(0.5, 0.5, 0)))
+	occlusion.add_child(MPColorRect.Create(normal.size, Color(1.0, 1.0, 1.0)))
+	
+	var color_rect = null
 	for lm in visible_layers:
-		var l = lm.layer
-		var m = lm.masks
-		var layer_shaders = get_shaders(m.size())
+		var layer = lm.layer
+		var masks = lm.masks
+		var layer_shaders = get_shaders(masks.size())
 		# TODO: factor the code below
 		# albedo
-		color_rect = ColorRect.new()
-		color_rect.size = albedo.size
-		color_rect.material = ShaderMaterial.new()
-		color_rect.material.shader = layer_shaders.albedo
-		color_rect.material.set_shader_parameter("input_tex", l.albedo)
-		color_rect.material.set_shader_parameter("modulate", l.albedo_alpha)
-		apply_masks(color_rect.material, m)
-		l.albedo_color_rects = [ color_rect ]
+		color_rect = MPColorRect.CreateWithMaterial(albedo.size, 
+						layer_shaders.albedo, 
+						layer.albedo, 
+						layer.albedo_alpha
+					)
+		apply_masks(color_rect.material, masks)
+		layer.albedo_color_rects = [ color_rect ]
 		albedo.add_child(color_rect)
 		# metallic
-		color_rect = ColorRect.new()
-		color_rect.size = metallic.size
-		color_rect.material = ShaderMaterial.new()
-		color_rect.material.shader = layer_shaders.metallic
-		color_rect.material.set_shader_parameter("input_tex", l.mr)
-		color_rect.material.set_shader_parameter("modulate", l.metallic_alpha)
-		apply_masks(color_rect.material, m)
-		l.metallic_color_rects = [ color_rect ]
+		color_rect = MPColorRect.CreateWithMaterial(metallic.size, 
+						layer_shaders.metallic, 
+						layer.mr, 
+						layer.metallic_alpha
+					)
+		apply_masks(color_rect.material, masks)
+		layer.metallic_color_rects = [ color_rect ]
 		metallic.add_child(color_rect)
+		
 		# roughness
-		color_rect = ColorRect.new()
-		color_rect.size = roughness.size
-		color_rect.material = ShaderMaterial.new()
-		color_rect.material.shader = layer_shaders.roughness
-		color_rect.material.set_shader_parameter("input_tex", l.mr)
-		color_rect.material.set_shader_parameter("modulate", l.roughness_alpha)
-		apply_masks(color_rect.material, m)
-		l.roughness_color_rects = [ color_rect ]
+		color_rect = MPColorRect.CreateWithMaterial(roughness.size, 
+						layer_shaders.roughness, 
+						layer.mr, 
+						layer.roughness_alpha
+					)
+		apply_masks(color_rect.material, masks)
+		layer.roughness_color_rects = [ color_rect ]
 		roughness.add_child(color_rect)
+		
 		# emission
 		color_rect = ColorRect.new()
 		color_rect.size = emission.size
 		color_rect.material = ShaderMaterial.new()
 		color_rect.material.shader = layer_shaders.albedomask
-		color_rect.material.set_shader_parameter("input_tex", l.albedo)
-		color_rect.material.set_shader_parameter("modulate", l.albedo_alpha)
-		apply_masks(color_rect.material, m)
-		l.albedo_color_rects.push_back(color_rect)
+		color_rect.material.set_shader_parameter("input_tex", layer.albedo)
+		color_rect.material.set_shader_parameter("modulate", layer.albedo_alpha)
+		apply_masks(color_rect.material, masks)
+		layer.albedo_color_rects.push_back(color_rect)	#???
 		emission.add_child(color_rect)
+		
 		color_rect = ColorRect.new()
 		color_rect.size = emission.size
 		color_rect.material = ShaderMaterial.new()
 		color_rect.material.shader = layer_shaders.albedo
-		color_rect.material.set_shader_parameter("input_tex", l.emission)
-		color_rect.material.set_shader_parameter("modulate", l.emission_alpha)
-		apply_masks(color_rect.material, m)
-		l.emission_color_rects = [ color_rect ]
+		color_rect.material.set_shader_parameter("input_tex", layer.emission)
+		color_rect.material.set_shader_parameter("modulate", layer.emission_alpha)
+		apply_masks(color_rect.material, masks)
+		layer.emission_color_rects = [ color_rect ]
 		emission.add_child(color_rect)
 		# normal
 		color_rect = ColorRect.new()
 		color_rect.size = normal.size
 		color_rect.material = ShaderMaterial.new()
 		color_rect.material.shader = layer_shaders.albedo
-		color_rect.material.set_shader_parameter("input_tex", l.normal)
-		color_rect.material.set_shader_parameter("modulate", l.normal_alpha)
-		apply_masks(color_rect.material, m)
-		l.normal_color_rects = [ color_rect ]
+		color_rect.material.set_shader_parameter("input_tex", layer.normal)
+		color_rect.material.set_shader_parameter("modulate", layer.normal_alpha)
+		apply_masks(color_rect.material, masks)
+		layer.normal_color_rects = [ color_rect ]
 		normal.add_child(color_rect)
 		# depth
 		color_rect = ColorRect.new()
 		color_rect.size = depth.size
 		color_rect.material = ShaderMaterial.new()
 		color_rect.material.shader = layer_shaders.metallic
-		color_rect.material.set_shader_parameter("input_tex", l.do)
-		color_rect.material.set_shader_parameter("modulate", l.depth_alpha)
-		apply_masks(color_rect.material, m)
-		l.depth_color_rects = [ color_rect ]
+		color_rect.material.set_shader_parameter("input_tex", layer.do)
+		color_rect.material.set_shader_parameter("modulate", layer.depth_alpha)
+		apply_masks(color_rect.material, masks)
+		layer.depth_color_rects = [ color_rect ]
 		depth.add_child(color_rect)
 		# occlusion
-		color_rect = ColorRect.new()
-		color_rect.size = occlusion.size
-		color_rect.material = ShaderMaterial.new()
-		color_rect.material.shader = layer_shaders.roughness
-		color_rect.material.set_shader_parameter("input_tex", l.do)
-		color_rect.material.set_shader_parameter("modulate", l.occlusion_alpha)
-		apply_masks(color_rect.material, m)
-		l.occlusion_color_rects = [ color_rect ]
+		color_rect = MPColorRect.CreateWithMaterial(occlusion.size, 
+						layer_shaders.roughness, 
+						layer.do, 
+						layer.occlusion_alpha
+					)
+		apply_masks(color_rect.material, masks)
+		layer.occlusion_color_rects = [ color_rect ]
 		occlusion.add_child(color_rect)
+		
 	_on_Painter_painted()
 
 func set_normal_options(paint_normal, paint_depth_as_bump, bump_strength):

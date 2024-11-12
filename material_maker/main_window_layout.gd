@@ -12,6 +12,7 @@ const PANELS = [
 	{ name="Brushes", scene=preload("res://material_maker/panels/brushes/brushes.tscn"), position="TopLeft" },
 	{ name="Layers", scene=preload("res://material_maker/panels/layers/layers.tscn"), position="BottomRight" },
 	{ name="Parameters", scene=preload("res://material_maker/panels/parameters/parameters.tscn"), position="TopRight" },
+	{ name="PreviewPaint", scene=preload("res://material_maker/panels/preview_paint/preview_paint.tscn"), position="TopRight" },
 ]
 const HIDE_PANELS = {
 	material=[ "Brushes", "Layers", "Parameters" ],

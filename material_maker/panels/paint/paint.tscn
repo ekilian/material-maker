@@ -179,7 +179,7 @@ shader_parameter/preview_2d_size = null
 shader_parameter/preview_2d_scale = 1.0
 shader_parameter/preview_2d_center = Vector2(0.5, 0.5)
 
-[node name="MaterialSpray" type="VBoxContainer" groups=["preview"]]
+[node name="MaterialSpray" type="VBoxContainer" groups=["layers", "preview"]]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -643,7 +643,7 @@ mouse_filter = 2
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 1
-scroll_offset = Vector2(0, -308)
+scroll_offset = Vector2(-1, -308)
 shader_context_defs = "uniform sampler2D mesh_normal_tex;
 "
 

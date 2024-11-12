@@ -63,7 +63,7 @@ var mask : MMTexture = MMTexture.new()
 @onready var layers = $PaintLayers
 @onready var paint_engine_button = $VSplitContainer/HSplitContainer/Painter/Tools/Engine
 @onready var eraser_button = $VSplitContainer/HSplitContainer/Painter/Tools/Eraser
-@onready var graph_edit = $VSplitContainer/GraphEdit
+@onready var graph_edit:MMGraphEdit = $VSplitContainer/GraphEdit
 @onready var undoredo = $UndoRedo
 
 @onready var brush_view_3d : ColorRect = $VSplitContainer/HSplitContainer/Painter/BrushView
@@ -163,7 +163,7 @@ func project_selected() -> void:
 	remote_node = get_remote()
 	var parameters_panel = main_window.get_panel("Parameters")
 	parameters_panel.set_generator(remote_node)
-	parameters_panel.set_project(get_settings())	#TODO: Check if needed
+	parameters_panel.set_project(get_settings())	
 
 func update_brush() -> void:
 	brush_node = graph_edit.generator.get_node("Brush")
@@ -274,9 +274,13 @@ func set_settings(s : Dictionary):
 		layers.set_normal_options(settings.paint_normal, settings.paint_depth_as_bump, settings.bump_strength)
 		preview_material.heightmap_enabled = settings.paint_depth
 		set_need_save(true)
+	var parameters_panel = mm_globals.main_window.get_panel("Parameters")
+	parameters_panel.set_project(s)
+
 
 func check_material_feature(variable : String, value : bool) -> void:
 	preview_material[variable] = value
+
 
 func material_feature_is_checked(variable : String) -> bool:
 	return preview_material[variable]
@@ -1062,3 +1066,10 @@ func _on_mask_selector_gui_input(event):
 		if event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 			await load_id_map()
 			set_current_tool(MODE_MASK_SELECTOR)
+			
+func _on_project_settings_changed(settings:Dictionary) -> void:
+	set_settings(settings)
+	
+func _on_layers_settings_changed(channel: String, value) -> void:
+	layers.update_alpha(channel)
+	layers._on_Painter_painted()

@@ -17,7 +17,7 @@ shader_parameter/epsilon = 0.0078125
 shader_parameter/normal_tex = SubResource("2")
 shader_parameter/depth_tex = SubResource("1")
 
-[node name="PaintLayers" type="Node"]
+[node name="PaintLayers" type="Node" groups=["layers"]]
 script = ExtResource("1")
 
 [node name="Albedo" type="SubViewport" parent="."]
