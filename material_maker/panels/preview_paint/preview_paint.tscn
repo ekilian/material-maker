@@ -1,0 +1,76 @@
+[gd_scene load_steps=6 format=3 uid="uid://8862v6bpbmdf"]
+
+[ext_resource type="Script" path="res://material_maker/panels/preview_paint/preview_paint.gd" id="1_yetqt"]
+[ext_resource type="Texture2D" uid="uid://c0j4px4n72di5" path="res://material_maker/icons/icons.tres" id="2_6es3s"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6i7mq"]
+atlas = ExtResource("2_6es3s")
+region = Rect2(0, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vxple"]
+atlas = ExtResource("2_6es3s")
+region = Rect2(16, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nnapv"]
+atlas = ExtResource("2_6es3s")
+region = Rect2(16, 48, 16, 16)
+
+[node name="PreviewPaint" type="PanelContainer" groups=["layers"]]
+theme_type_variation = &"MM_PanelBackground"
+script = ExtResource("1_yetqt")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"MM_PanelBackground"
+
+[node name="Buttons" type="HBoxContainer" parent="VBoxContainer/PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="Small" type="Button" parent="VBoxContainer/PanelContainer/Buttons"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+tooltip_text = "Small (128x128 px)"
+icon = SubResource("AtlasTexture_6i7mq")
+icon_alignment = 1
+
+[node name="Medium" type="Button" parent="VBoxContainer/PanelContainer/Buttons"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+tooltip_text = "Medium (256x256 px)"
+icon = SubResource("AtlasTexture_vxple")
+icon_alignment = 1
+
+[node name="Large" type="Button" parent="VBoxContainer/PanelContainer/Buttons"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+tooltip_text = "Large (512x512 px)"
+icon = SubResource("AtlasTexture_6i7mq")
+icon_alignment = 1
+
+[node name="Seperator" type="VSeparator" parent="VBoxContainer/PanelContainer/Buttons"]
+layout_mode = 2
+
+[node name="ToggleView" type="Button" parent="VBoxContainer/PanelContainer/Buttons"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+tooltip_text = "Small (128x128 px)"
+icon = SubResource("AtlasTexture_nnapv")
+icon_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GridContainer" type="HFlowContainer" parent="VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[connection signal="pressed" from="VBoxContainer/PanelContainer/Buttons/Small" to="." method="_on_size_pressed" binds= [0]]
+[connection signal="pressed" from="VBoxContainer/PanelContainer/Buttons/Medium" to="." method="_on_size_pressed" binds= [1]]
+[connection signal="pressed" from="VBoxContainer/PanelContainer/Buttons/Large" to="." method="_on_size_pressed" binds= [2]]
