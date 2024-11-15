@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://ubu15aub8rei"]
+[gd_scene load_steps=5 format=3 uid="uid://ubu15aub8rei"]
 
 [ext_resource type="Script" path="res://material_maker/widgets/size_option_button/size_option_button.gd" id="1_w6od6"]
 [ext_resource type="Script" path="res://material_maker/panels/paint/scenes/new_project_panel.gd" id="1_ymfp0"]
+[ext_resource type="PackedScene" uid="uid://dot3yy7v6xa8g" path="res://material_maker/panels/paint/collapse_button.tscn" id="2_htkqj"]
 [ext_resource type="PackedScene" uid="uid://rflulhsuy3ax" path="res://material_maker/widgets/float_edit/float_edit.tscn" id="2_s0j0j"]
 
 [node name="NewProjectPanel" type="PanelContainer"]
@@ -29,45 +30,58 @@ theme_override_constants/margin_bottom = 5
 
 [node name="Panel" type="PanelContainer" parent="Darken/VBoxContainer/Project"]
 layout_mode = 2
+theme_type_variation = &"MM_PanelBackground"
 
-[node name="Margin" type="MarginContainer" parent="Darken/VBoxContainer/Project/Panel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Darken/VBoxContainer/Project/Panel"]
+layout_mode = 2
+
+[node name="CollapseButton" parent="Darken/VBoxContainer/Project/Panel/VBoxContainer" instance=ExtResource("2_htkqj")]
+layout_mode = 2
+text = "Project"
+
+[node name="Margin" type="MarginContainer" parent="Darken/VBoxContainer/Project/Panel/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="GridContainer" type="GridContainer" parent="Darken/VBoxContainer/Project/Panel/Margin"]
+[node name="Grid" type="GridContainer" parent="Darken/VBoxContainer/Project/Panel/VBoxContainer/Margin"]
 layout_mode = 2
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 2
 
-[node name="ModelFileLabel" type="Label" parent="Darken/VBoxContainer/Project/Panel/Margin/GridContainer"]
+[node name="ModelFileLabel" type="Label" parent="Darken/VBoxContainer/Project/Panel/VBoxContainer/Margin/Grid"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 14
 text = "Model:"
 
-[node name="ModelFile" type="Button" parent="Darken/VBoxContainer/Project/Panel/Margin/GridContainer"]
+[node name="ModelFile" type="Button" parent="Darken/VBoxContainer/Project/Panel/VBoxContainer/Margin/Grid"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Model file"
 clip_text = true
 
-[node name="ProjectNameLabel" type="Label" parent="Darken/VBoxContainer/Project/Panel/Margin/GridContainer"]
+[node name="ProjectNameLabel" type="Label" parent="Darken/VBoxContainer/Project/Panel/VBoxContainer/Margin/Grid"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 14
 text = "Project:"
 
-[node name="ProjectName" type="TextEdit" parent="Darken/VBoxContainer/Project/Panel/Margin/GridContainer"]
+[node name="ProjectName" type="TextEdit" parent="Darken/VBoxContainer/Project/Panel/VBoxContainer/Margin/Grid"]
 clip_contents = false
 custom_minimum_size = Vector2(200, 32)
 layout_mode = 2
 placeholder_text = "Paint Project.mmpp"
 
+[node name="Panel" type="PanelContainer" parent="Darken/VBoxContainer/Project/Panel/VBoxContainer"]
+visible = false
+layout_mode = 2
+
 [node name="Spacer3" type="MarginContainer" parent="Darken/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_right = 10
@@ -83,44 +97,40 @@ theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Darken/VBoxContainer/Settings"]
+[node name="Panel" type="PanelContainer" parent="Darken/VBoxContainer/Settings"]
+layout_mode = 2
+theme_type_variation = &"MM_PanelBackground"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Darken/VBoxContainer/Settings/Panel"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Darken/VBoxContainer/Settings/VBoxContainer"]
+[node name="CollapseButton" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer" instance=ExtResource("2_htkqj")]
 layout_mode = 2
+text = "Paint settings"
 
-[node name="SettingsLabel" type="Label" parent="Darken/VBoxContainer/Settings/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Paint settings:"
-
-[node name="Panel" type="PanelContainer" parent="Darken/VBoxContainer/Settings/VBoxContainer"]
-layout_mode = 2
-
-[node name="Margin" type="MarginContainer" parent="Darken/VBoxContainer/Settings/VBoxContainer/Panel"]
+[node name="Margin" type="MarginContainer" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 3
 theme_override_constants/margin_top = 3
 theme_override_constants/margin_right = 3
 theme_override_constants/margin_bottom = 3
 
-[node name="Grid" type="GridContainer" parent="Darken/VBoxContainer/Settings/VBoxContainer/Panel/Margin"]
+[node name="Grid" type="GridContainer" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer/Margin"]
 layout_mode = 2
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 
-[node name="Resolution" type="HBoxContainer" parent="Darken/VBoxContainer/Settings/VBoxContainer/Panel/Margin/Grid"]
+[node name="Resolution" type="HBoxContainer" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer/Margin/Grid"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ResolutionLabel" type="Label" parent="Darken/VBoxContainer/Settings/VBoxContainer/Panel/Margin/Grid/Resolution"]
+[node name="ResolutionLabel" type="Label" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer/Margin/Grid/Resolution"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Paint textures resolution:"
 
-[node name="Resolution" type="OptionButton" parent="Darken/VBoxContainer/Settings/VBoxContainer/Panel/Margin/Grid/Resolution"]
+[node name="Resolution" type="OptionButton" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer/Margin/Grid/Resolution"]
 custom_minimum_size = Vector2(200, 26)
 layout_mode = 2
 size_flags_horizontal = 8
@@ -129,35 +139,40 @@ script = ExtResource("1_w6od6")
 min_size = 8
 max_size = 12
 
-[node name="PaintEmission" type="CheckBox" parent="Darken/VBoxContainer/Settings/VBoxContainer/Panel/Margin/Grid"]
+[node name="PaintEmission" type="CheckBox" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer/Margin/Grid"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Paint Emission"
 
-[node name="PaintNormal" type="CheckBox" parent="Darken/VBoxContainer/Settings/VBoxContainer/Panel/Margin/Grid"]
+[node name="PaintNormal" type="CheckBox" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer/Margin/Grid"]
 layout_mode = 2
 size_flags_horizontal = 0
 button_pressed = true
 text = "Paint Normal"
 
-[node name="PaintDepth" type="CheckBox" parent="Darken/VBoxContainer/Settings/VBoxContainer/Panel/Margin/Grid"]
+[node name="PaintDepth" type="CheckBox" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer/Margin/Grid"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Paint Depth"
 
-[node name="Bump" type="HBoxContainer" parent="Darken/VBoxContainer/Settings/VBoxContainer/Panel/Margin/Grid"]
+[node name="Bump" type="HBoxContainer" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer/Margin/Grid"]
 layout_mode = 2
 
-[node name="PaintBump" type="CheckBox" parent="Darken/VBoxContainer/Settings/VBoxContainer/Panel/Margin/Grid/Bump"]
+[node name="PaintBump" type="CheckBox" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer/Margin/Grid/Bump"]
 layout_mode = 2
 text = "Normals from depth"
 
-[node name="BumpStrength" parent="Darken/VBoxContainer/Settings/VBoxContainer/Panel/Margin/Grid/Bump" instance=ExtResource("2_s0j0j")]
+[node name="BumpStrength" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer/Margin/Grid/Bump" instance=ExtResource("2_s0j0j")]
 layout_mode = 2
 step = 0.01
 float_only = true
 
+[node name="Panel" type="PanelContainer" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer"]
+visible = false
+layout_mode = 2
+
 [node name="Spacer2" type="MarginContainer" parent="Darken/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_right = 10
@@ -173,41 +188,45 @@ theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Darken/VBoxContainer/Optionals"]
+[node name="Panel" type="PanelContainer" parent="Darken/VBoxContainer/Optionals"]
+layout_mode = 2
+theme_type_variation = &"MM_PanelBackground"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Darken/VBoxContainer/Optionals/Panel"]
 layout_mode = 2
 
-[node name="OptionalLabel" type="Label" parent="Darken/VBoxContainer/Optionals/VBoxContainer"]
+[node name="CollapseButton" parent="Darken/VBoxContainer/Optionals/Panel/VBoxContainer" instance=ExtResource("2_htkqj")]
 layout_mode = 2
-size_flags_horizontal = 0
-text = "Optionals:"
+text = "Optional"
 
-[node name="Panel" type="PanelContainer" parent="Darken/VBoxContainer/Optionals/VBoxContainer"]
-layout_mode = 2
-
-[node name="Margin" type="MarginContainer" parent="Darken/VBoxContainer/Optionals/VBoxContainer/Panel"]
+[node name="Margin" type="MarginContainer" parent="Darken/VBoxContainer/Optionals/Panel/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="GridContainer" type="GridContainer" parent="Darken/VBoxContainer/Optionals/VBoxContainer/Panel/Margin"]
+[node name="Grid" type="GridContainer" parent="Darken/VBoxContainer/Optionals/Panel/VBoxContainer/Margin"]
 layout_mode = 2
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 2
 
-[node name="ColorIdMapLabel" type="Label" parent="Darken/VBoxContainer/Optionals/VBoxContainer/Panel/Margin/GridContainer"]
+[node name="ColorIdMapLabel" type="Label" parent="Darken/VBoxContainer/Optionals/Panel/VBoxContainer/Margin/Grid"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Choose a color ID map:"
 
-[node name="ChooseFile" type="Button" parent="Darken/VBoxContainer/Optionals/VBoxContainer/Panel/Margin/GridContainer"]
+[node name="ChooseFile" type="Button" parent="Darken/VBoxContainer/Optionals/Panel/VBoxContainer/Margin/Grid"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 10
 text = "Choose file ..."
 clip_text = true
+
+[node name="Panel" type="PanelContainer" parent="Darken/VBoxContainer/Optionals/Panel/VBoxContainer"]
+visible = false
+layout_mode = 2
 
 [node name="Spacer" type="MarginContainer" parent="Darken/VBoxContainer"]
 layout_mode = 2
@@ -227,12 +246,14 @@ theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
 [node name="Start" type="Button" parent="Darken/VBoxContainer/ButtonBar"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 4
+disabled = true
 text = "Start new project"
-clip_text = true
 
-[connection signal="pressed" from="Darken/VBoxContainer/Project/Panel/Margin/GridContainer/ModelFile" to="." method="_on_choose_model_pressed"]
-[connection signal="pressed" from="Darken/VBoxContainer/Optionals/VBoxContainer/Panel/Margin/GridContainer/ChooseFile" to="." method="_on_choose_color_id_file_pressed"]
+[connection signal="pressed" from="Darken/VBoxContainer/Project/Panel/VBoxContainer/Margin/Grid/ModelFile" to="." method="_on_choose_model_pressed"]
+[connection signal="focus_exited" from="Darken/VBoxContainer/Project/Panel/VBoxContainer/Margin/Grid/ProjectName" to="." method="_on_project_name_focus_exited"]
+[connection signal="pressed" from="Darken/VBoxContainer/Optionals/Panel/VBoxContainer/Margin/Grid/ChooseFile" to="." method="_on_choose_color_id_file_pressed"]
 [connection signal="pressed" from="Darken/VBoxContainer/ButtonBar/Start" to="." method="_on_start_project_pressed"]
