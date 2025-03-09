@@ -104,9 +104,10 @@ theme_type_variation = &"MM_PanelBackground"
 [node name="VBoxContainer" type="VBoxContainer" parent="Darken/VBoxContainer/Settings/Panel"]
 layout_mode = 2
 
-[node name="CollapseButton" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer" instance=ExtResource("2_htkqj")]
+[node name="CollapseButton" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer" node_paths=PackedStringArray("node") instance=ExtResource("2_htkqj")]
 layout_mode = 2
 text = "Paint settings"
+node = NodePath("../Margin")
 
 [node name="Margin" type="MarginContainer" parent="Darken/VBoxContainer/Settings/Panel/VBoxContainer"]
 layout_mode = 2

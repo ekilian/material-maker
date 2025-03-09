@@ -262,7 +262,7 @@ stretch = true
 own_world_3d = true
 world_3d = SubResource("World3D_2dac6")
 handle_input_locally = false
-size = Vector2i(900, 550)
+size = Vector2i(10, 10)
 render_target_update_mode = 4
 
 [node name="Sun" type="DirectionalLight3D" parent="VSplitContainer/HSplitContainer/Painter/View/MainView"]
@@ -697,7 +697,6 @@ mouse_filter = 2
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 1
-scroll_offset = Vector2(-1, -238)
 shader_context_defs = "uniform sampler2D mesh_normal_tex;
 "
 
